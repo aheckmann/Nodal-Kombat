@@ -9,7 +9,6 @@ h1 {
 }
 
 /*Layout*/
-
 #container {
 	margin: auto;
 	width: 1200px;
@@ -49,8 +48,43 @@ h1 {
 }
 
 
+/* helpers */
+.hidden {
+	display: none;
+}
 
 
+/* Modal */
+#simplemodal-container a.modalCloseImg {
+	background:url(img/x.png) no-repeat; /* adjust url as required */
+	width:25px;
+	height:29px;
+	display:inline;
+	z-index:3200;
+	position:absolute;
+	top:-15px;
+	right:-15px;
+	cursor:pointer;
+}
+
+#simplemodal-container {
+	border: 5px solid black;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	background-color: white;
+}
+
+#simplemodal-overlay {background-color:black;}
+
+#login-iframe {
+	width: 400px; 
+	height: 170px;
+}
+
+#login-modal-text {
+	margin: 0px 43px 15px 43px;
+}
 
 /* NESTED COLUMNS */
 .col {

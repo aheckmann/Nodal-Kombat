@@ -353,6 +353,7 @@
 		var player;
 		
 		ko.handle.receiveid = function(id) {
+			console.log("Joined the game, got MY id of " + id);
 			player = new Player(id);		
 		}
 		ko.handle.playerjoin = function(id) {
@@ -371,8 +372,8 @@
 		//camera.target = player;
 		
 		function start() {
-			console.log("start()");
 			ko.handle.start = function() {
+				console.log("Server says we can START the game!");
 				window.setInterval(main, 1000 / 77);
 			}
 			ko.join();

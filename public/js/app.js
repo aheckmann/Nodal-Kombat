@@ -9,6 +9,7 @@
     , gameover: function(){ console.log("ko.gameover"); console.log(arguments) }
     , playerquit: function(){ console.log("playerquit"); console.log(arguments) }
     , countdown: function(){ console.log("countdown"); console.log(arguments) }
+    , status: function(){console.log("status: gameover");console.log(arguments) }
     }
   , send: function(event){
       if (!(event && event.method)) return 
@@ -20,7 +21,7 @@
   socket.connect()
   socket.send("join")
   socket.on("message", function(message){
-     //console.dir(message)
+    console.dir(message)
     
     // don't use JSON.parsing, too slow
     // "jump#40,400,60|e:punch|e:gameover"

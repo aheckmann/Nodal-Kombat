@@ -107,27 +107,29 @@
 		
 		
 		function Physics() {
-			this.scale = 0.01;
+			this.scale = 0.1;
 			var world = new b2AABB();
-			world.minVertex.Set(-50, -50);
-			world.maxVertex.Set(50, 50);
-			var gravity = new b2Vec2(0, 300);
+			world.minVertex.Set(-500, -500);
+			world.maxVertex.Set(500, 500);
+			var gravity = new b2Vec2(0, 30);
 			var doSleep = true;
 			this.world = new b2World(world, gravity, doSleep);
+		}
+		Physics.prototype.step = function () {
+			this.world.Step(1 / 30, 5);
 		}
 
 		
 		function Keyboard() {
 			var that = this;
 			
-			this.map = {'38':'up', '39':'right', '40':'down', '37':'left'};
+			this.map = {'38':'up', '39':'right', '40':'down', '37':'left', '32':'space'};
 				
 			$(document).keydown(function (event) {
 				if (that.map[event.which]) {
 					that[that.map[event.which]] = true;
 				}
 				else {
-					////console.log(event.which);
 					return true;
 				}
 				return false;
@@ -143,7 +145,7 @@
 		
 		function Camera(spring) {
 			this.x = -200;
-			this.y = -400;
+			this.y = -500;
 			this.width = 400;
 			this.height = 240;
 			this.spring = spring;
@@ -155,10 +157,14 @@
 			};
 		}
 		Camera.prototype.update = function() {
+			var right = this.x + this.width,
+				bottom = this.y + this.height;
 			this.x += (this.target.left - this.x) * this.spring;
 			this.y += (this.target.top - this.y) * this.spring;
-			this.width += (this.target.right - (this.x + this.width)) * this.spring * 2;
-			this.height += (this.target.bottom - (this.y + this.height)) * this.spring * 2;
+			right += (this.target.right - right) * this.spring;
+			bottom += (this.target.bottom - bottom) * this.spring;
+			this.width = right - this.x;
+			this.height = bottom - this.y;
 		};
 
 
@@ -194,7 +200,7 @@
 		function Player(x, y) {
 			this.x = x;
 			this.y = y;
-			this.r = 8;
+			this.r = 8 * physics.scale;
 			this.body = this._build_body();
 		}
 		Player.prototype._build_body = function() {
@@ -206,12 +212,30 @@
 			
 			var body = new b2BodyDef();
 			body.AddShape(circle);
-			body.position.Set(this.x, this.y);
+			body.position.Set(this.x * physics.scale, this.y * physics.scale);
 			body.angularDamping = 0.7;
 			body.linearDamping = 0.01;
 			body.allowSleep = false;
 			
 			return physics.world.CreateBody(body);		
+		};
+		Player.prototype.handle_input = function() {
+			if (keyboard.left && !keyboard.right) {
+				this._run(-1);
+			}
+			else if (keyboard.right && !keyboard.left) {
+				this._run(1);
+			}
+			if (keyboard.space) {
+				this._jump();
+			}
+		};
+		Player.prototype._run = function(x) {
+			var offset = b2Math.AddVV(this.body.GetCenterPosition(), new b2Vec2(0, -this.r * 15));
+			this.body.ApplyForce(new b2Vec2(x * 15, 0), offset);
+		};
+		Player.prototype._jump = function() {
+			this.body.ApplyImpulse(new b2Vec2(0, -2), this.body.GetCenterPosition());
 		};
 		
 	
@@ -220,8 +244,8 @@
 		var physics = new Physics();
 		var keyboard = new Keyboard();
 		var camera = new Camera(.02);
+		var player = new Player(0, -250);
 		
-		var player = {x: 0, y: 0};
 		
 		//camera.target = player;
 		
@@ -236,14 +260,10 @@
 		}
 		
 		function main() {
-			player.x = (keyboard.left) ? player.x - 10 : player.x;
-			player.x = (keyboard.right) ? player.x + 10 : player.x;
-			player.y = (keyboard.up) ? player.y - 10 : player.y;			
-			player.y = (keyboard.down) ? player.y + 10 : player.y;
-
+			physics.step();
+			player.handle_input();
 			camera.update();
 			view.render(camera);
-			
 		}
 		
 		level.load('test_level', start);	// Start the game after loading!

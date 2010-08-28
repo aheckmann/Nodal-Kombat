@@ -2,6 +2,8 @@
 	"name":"Test Level",
 	"author":"Hunter Loftis",
 	"background": "background.jpg",
+	"horizontal":1000,
+	"vertical":640,
 	"platforms": [
 		{
 			"image":"platform_main.png",

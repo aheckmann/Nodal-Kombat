@@ -50,6 +50,8 @@
 		function Level(canvas_id) {
 			this.background = null;
 			this.platforms = [];
+			this.w = 0;
+			this.h = 0;
 		}
 		Level.prototype.load = function(name, callback) {
 			var that = this,
@@ -58,6 +60,8 @@
 			$.getJSON(url + "data.json", function(data) {
 				//console.log("Got the level");
 				that.background = new SmartImage(url + data.background);
+				that.w = data.horizontal;
+				that.h = data.vertical;
 				for (var i = 0; i < data.platforms.length; i++) {
 					var new_platform = new Platform(url + data.platforms[i].image, data.platforms[i].left, data.platforms[i].top);
 					that.platforms.push(new_platform);
@@ -79,11 +83,15 @@
 		View.prototype.render = function(level, cam_x, cam_y) {
 			var bg = level.background.img,
 				ox = this.ox,
-				oy = this.oy;
-			this.ctx.drawImage(bg, ox - bg.width * .5 + cam_x * .25, oy - bg.height * .5 + cam_y * .25);
+				oy = this.oy,
+				px = ((cam_x + level.w) / (level.w * 2)),
+				py = ((cam_y + level.h) / (level.h * 2)),
+				bx = (this.canvas.width - bg.width) * px,
+				by = (this.canvas.height - bg.height) * py;
+			this.ctx.drawImage(bg, bx, by);
 			for (var i = 0; i < level.platforms.length; i++) {
 				var plat = level.platforms[i];
-				this.ctx.drawImage(plat.simg.img, ox + plat.x + cam_x, oy + plat.y + cam_y);
+				this.ctx.drawImage(plat.simg.img, ox + plat.x - cam_x, oy + plat.y - cam_y);
 			}
 		}
 		
@@ -119,12 +127,30 @@
 		
 		var camera_x = 0,
 			camera_y = 0;
+		var cdx = 0,
+			cdy = 0;
 		
 		function main() {
-			camera_x = (keyboard.left) ? camera_x + 3 : camera_x;
-			camera_x = (keyboard.right) ? camera_x - 3 : camera_x;
-			camera_y = (keyboard.up) ? camera_y + 3 : camera_y;			
-			camera_y = (keyboard.down) ? camera_y - 3 : camera_y;						
+			cdx = (keyboard.left) ? cdx - 2 : cdx;
+			cdx = (keyboard.right) ? cdx + 2 : cdx;
+			cdy = (keyboard.up) ? cdy - 2 : cdy;			
+			cdy = (keyboard.down) ? cdy + 2 : cdy;
+			camera_x += cdx;
+			camera_y += cdy;
+			cdx *= .9;
+			cdy *= .9;
+			if (camera_x < -level.w) {
+				camera_x = -level.w;
+			}
+			else if(camera_x > level.w) {
+				camera_x = level.w;
+			}
+			if (camera_y < -level.h) {
+				camera_y = level.y;
+			}
+			else if(camera_y > level.h) {
+				camera_y = level.h;
+			}
 			view.render(level, camera_x, camera_y);
 		}
 		

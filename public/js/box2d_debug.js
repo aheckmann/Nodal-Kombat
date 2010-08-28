@@ -6,7 +6,7 @@ function drawWorld(world, context, ox, oy, scale) {
 	}
 }
 function drawShape(shape, context, ox, oy, scale) {
-	context.strokeStyle = '#f00';
+	context.strokeStyle = '#0ff';
 	context.beginPath();
 	switch (shape.m_type) {
 	case b2Shape.e_circleShape:
@@ -18,20 +18,21 @@ function drawShape(shape, context, ox, oy, scale) {
 			var theta = 0.0;
 			var dtheta = 2.0 * Math.PI / segments;
 			// draw circle
-			context.moveTo(pos.x + r, pos.y);
+			context.moveTo(ox + (pos.x + r) * scale, oy + pos.y * scale);
+			//context.moveTo(ox, oy);
 			for (var i = 0; i < segments; i++) {
 				var d = new b2Vec2(r * Math.cos(theta), r * Math.sin(theta));
 				var v = b2Math.AddVV(pos, d);
-				context.lineTo(400 + v.x * 100, v.y * 100);
+				context.lineTo(ox + v.x * scale, oy + v.y * scale);
 				theta += dtheta;
 			}
-			context.lineTo((pos.x + r) * 100, pos.y * 100);
+			context.lineTo(ox + (pos.x + r) * scale, oy + pos.y * scale);
 	
 			// draw radius
-			context.moveTo(400 + pos.x * 100, pos.y * 100);
+			context.moveTo(ox + pos.x * scale, oy + pos.y * scale);
 			var ax = circle.m_R.col1;
 			var pos2 = new b2Vec2(pos.x + r * ax.x, pos.y + r * ax.y);
-			context.lineTo(400 + pos2.x * 100, pos2.y * 100);
+			context.lineTo(ox + pos2.x * scale, oy + pos2.y * scale);
 		}
 		break;
 	case b2Shape.e_polyShape:

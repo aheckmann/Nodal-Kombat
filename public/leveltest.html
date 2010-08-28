@@ -102,6 +102,7 @@
 				this.ctx.drawImage(plat.simg.img, fx + plat.x * scale, fy + plat.y * scale, plat.simg.img.width * scale, plat.simg.img.height * scale);
 			}
 		
+			console.log("scales: " + scale + " / " + physics.scale);
 			drawWorld(physics.world, this.ctx, fx, fy, scale / physics.scale);
 		}
 		
@@ -342,9 +343,6 @@
 		//camera.target = player;
 		
 		function start() {
-			
-			drawWorld(physics.world, view.ctx, player.x, player.y);
-			
 			window.setInterval(main, 1000 / 77);
 			//main();
 		}

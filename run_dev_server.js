@@ -29,7 +29,7 @@ dev_server = {
         sys.debug('DEVSERVER: Starting server');
         self.watchFiles();
 
-        this.process = child_process.spawn(process.ARGV[0], ['server.js']);
+        this.process = child_process.spawn(process.ARGV[0], ['dev.js']);
 
         this.process.stdout.addListener('data', function (data) {
             process.stdout.write(data);

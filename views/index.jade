@@ -3,7 +3,8 @@ h1= name
 - if (user != null)
   ul
     li Logged in as #{user} 
-    li
-      img(src: avatar)
+    - if (avatar != "undefined")
+      li
+        img(src: avatar)
 - else
   p You are not logged in.

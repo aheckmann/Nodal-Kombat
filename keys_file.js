@@ -13,4 +13,4 @@ exports.foursquareConsumerKey= "";
 exports.foursquareConsumerSecret= "";
 exports.janrainApiKey= "24022fac64476b7787628ac4f69f1b80238d2af3";
 exports.janrainAppDomain= "nodelicious";
-exports.janrainCallbackUrl= "http://127.0.0.1/auth/janrain_callback";
+exports.janrainCallbackUrl= "http://localhost:3000/auth/janrain_callback";

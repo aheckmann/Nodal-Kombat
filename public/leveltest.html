@@ -111,7 +111,7 @@
 			var world = new b2AABB();
 			world.minVertex.Set(-500, -500);
 			world.maxVertex.Set(500, 500);
-			var gravity = new b2Vec2(0, 30);
+			var gravity = new b2Vec2(0, 25);
 			var doSleep = true;
 			this.world = new b2World(world, gravity, doSleep);
 		}
@@ -124,10 +124,15 @@
 			var that = this;
 			
 			this.map = {'38':'up', '39':'right', '40':'down', '37':'left', '32':'space'};
-				
+			
+			for (var i in this.map) {
+				this[this.map[i]] = {down: false, first: false};
+			}
+			
 			$(document).keydown(function (event) {
 				if (that.map[event.which]) {
-					that[that.map[event.which]] = true;
+					var key = that[that.map[event.which]];				
+					key.down = true;
 				}
 				else {
 					return true;
@@ -137,9 +142,16 @@
 			
 			$(document).keyup(function (event) {
 				if (that.map[event.which]) {
-					that[that.map[event.which]] = false;
-				}		
+					var key = that[that.map[event.which]];
+					key.down = false;
+				}
 			});	
+		}
+		Keyboard.prototype.monitor = function() {
+			for (var i in this.map) {
+				var key = this[this.map[i]];
+				key.first = (key.down) ? false : true;
+			}
 		}
 		
 		
@@ -201,6 +213,7 @@
 			this.x = x;
 			this.y = y;
 			this.r = 8 * physics.scale;
+			this.air_jump = false;
 			this.body = this._build_body();
 		}
 		Player.prototype._build_body = function() {
@@ -208,7 +221,7 @@
 			circle.density = 0.25;
 			circle.restitution = -0.1;
 			circle.radius = this.r;
-			circle.friction = 1.0;
+			circle.friction = 1.5;
 			
 			var body = new b2BodyDef();
 			body.AddShape(circle);
@@ -220,22 +233,46 @@
 			return physics.world.CreateBody(body);		
 		};
 		Player.prototype.handle_input = function() {
-			if (keyboard.left && !keyboard.right) {
+			if (keyboard.left.down && !keyboard.right.down) {
 				this._run(-1);
 			}
-			else if (keyboard.right && !keyboard.left) {
+			else if (keyboard.right.down && !keyboard.left.down) {
 				this._run(1);
 			}
-			if (keyboard.space) {
+			if (keyboard.space.down && keyboard.space.first) {
 				this._jump();
 			}
 		};
 		Player.prototype._run = function(x) {
 			var offset = b2Math.AddVV(this.body.GetCenterPosition(), new b2Vec2(0, -this.r * 15));
-			this.body.ApplyForce(new b2Vec2(x * 15, 0), offset);
+/*			for (var k in this.body) {
+				if (typeof(this.body[k]) === 'function') {
+					console.log(k);
+				}
+			}
+*/
+//			this.body.ApplyForce(new b2Vec2(x * 15, 0), offset);
+			this.body.ApplyForce(new b2Vec2(x * 5, 0), this.body.GetCenterPosition());
+			this.body.ApplyTorque(200 * x);
 		};
 		Player.prototype._jump = function() {
-			this.body.ApplyImpulse(new b2Vec2(0, -2), this.body.GetCenterPosition());
+			var contact = this.body.GetContactList();
+			while (contact) {
+				//console.dir(contact);
+				if (contact.contact.m_manifold[0].normal.y < 0) {
+					this.air_jump = true;
+					console.log("Jump");
+					this.body.ApplyImpulse(new b2Vec2(0, -11), this.body.GetCenterPosition());					
+					return;
+				}
+				contact = contact.next;
+			}
+			if (this.air_jump) {
+				this.air_jump = false;
+				console.log("Air jump");
+				this.body.ApplyImpulse(new b2Vec2(0, -11), this.body.GetCenterPosition());					
+				return;
+			}			
 		};
 		
 	
@@ -264,6 +301,7 @@
 			player.handle_input();
 			camera.update();
 			view.render(camera);
+			keyboard.monitor();			
 		}
 		
 		level.load('test_level', start);	// Start the game after loading!

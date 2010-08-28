@@ -1,4 +1,5 @@
 global.MAX_FIGHTERS = 10
+global.FIGHT_COUNTDOWN_SECS = 10 // 30
 
 require.paths.unshift(
   __dirname + '/support/express/support/connect/lib/'

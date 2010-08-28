@@ -1,3 +1,5 @@
+global.MAX_FIGHTERS = 10
+
 
 require.paths.unshift(
   __dirname + '/support/express/support/connect/lib/'
@@ -10,6 +12,7 @@ var express = require('./support/express')
   , redis_client = require('redis-client')
   , http = require('http')
   , io = require("./support/socketio")
+  , handle = require("./lib/handle")
 
 var redis = redis_client.createClient(9227, "goosefish.redistogo.com")
 var dbAuth = function() { redis.auth('0cf510f78c1288170fed3dfb436bd9fb'); }
@@ -25,32 +28,14 @@ var app = express.createServer(
 , express.staticProvider(__dirname + '/public')
 )
 
-
-var sock = io.listen(app)
-sock.on("connection", function(client){
-  client.on("message", function(msg){
-    console.log("recieved websocket msg: " + msg)
-    client.send("what up?!")
-  })
-  client.on("disconnect", function(){
-    console.log("client disconnected")
-  })
-})
-
 app.configure(function(){
   app.set('views', __dirname + '/views')
 })
-
-
 
 // routes
 app.get('/', function(req, res){
   res.render('index.jade', { locals: { name: "knockout" } } )
 })
-
-
-
-
 
 app.get('/ohai-redis', function(req, res){
 	redis.info(function (err, info) {
@@ -61,6 +46,17 @@ app.get('/ohai-redis', function(req, res){
 	});
 });
 
+
+// sockets 
+var sock = io.listen(app)
+sock.on("connection", function(client){
+  client.on("message", function(msg){
+    handle.incomingMsg(msg, client)
+  })
+  client.on("disconnect", function(){
+    handle.disconnect(client)
+  })
+})
 
 // run it!
 console.log("running on http://127.0.0.1:3000/")

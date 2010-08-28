@@ -1,4 +1,3 @@
-<!DOCTYPE HTML>
 <html>
     <head>
         <title>Level Test</title>
@@ -6,9 +5,11 @@
     </head>
     <body>
 
-	<canvas id="arena" width="800" height="480" />
+	<canvas id="arena" width="800" height="480"></canvas>
 
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+	<script type="text/javascript" src="js/box2djq.js"></script>
+	<script type="text/javascript" src="js/box2d_debug.js"></script>	
 	<script type="text/javascript">
 	
 	
@@ -17,7 +18,7 @@
 			this.img = new Image();
 			this.src = src;
 			this.img.onload = function () {
-				////console.log("Loaded " + src);
+				//////console.log("Loaded " + src);
 				callback && callback(that.img);
 				SmartImage.queue.splice(SmartImage.queue.indexOf(that), 1);
 				if (SmartImage.queue.length === 0) {
@@ -25,12 +26,12 @@
 				}
 			};
 			this.img.onerror = function () {
-				//console.log("Error: Couldn't load image " + src);
+				////console.log("Error: Couldn't load image " + src);
 			}
 			SmartImage.queue.push(this);
 		}
 		SmartImage.load_all = function(callback) {
-			//console.log("Loading all...");
+			////console.log("Loading all...");
 			SmartImage.callback = callback;
 			for (var i = 0; i < SmartImage.queue.length; i++) {
 				SmartImage.queue[i].img.src = SmartImage.queue[i].src;
@@ -40,34 +41,25 @@
 		
 
 
-		function Platform(img, x, y) {
-			this.simg = new SmartImage(img);
-			this.x = x;
-			this.y = y;
-		}
-		
-	
-		function Level(canvas_id) {
-			this.background = null;
-			this.platforms = [];
-		}
-		Level.prototype.load = function(name, callback) {
-			var that = this,
-				url = "levels/" + name + "/";
+		function Platform(url, plat_data) {
+			this.simg = new SmartImage(url + plat_data.image);
+			this.x = plat_data.left;
+			this.y = plat_data.top;
 			
-			$.getJSON(url + "data.json", function(data) {
-				//console.log("Got the level");
-				that.background = new SmartImage(url + data.background);
-				for (var i = 0; i < data.platforms.length; i++) {
-					var new_platform = new Platform(url + data.platforms[i].image, data.platforms[i].left, data.platforms[i].top);
-					that.platforms.push(new_platform);
-				}
-				SmartImage.load_all(function() {
-					//console.log("Starting loop...");
-					window.setInterval(callback, 1000 / 77);
-				});
-			});
-		};
+			var poly_sh = new b2PolyDef();
+			poly_sh.vertexCount = plat_data.polygon.length / 2;
+			for (var i = 0; i < plat_data.polygon.length / 2; i++) {
+				poly_sh.vertices[i].Set(plat_data.polygon[i*2] * physics.scale, plat_data.polygon[i*2+1] * physics.scale);
+			}
+			poly_sh.restitution = 0.2;
+			poly_sh.friction = 0.4;
+
+			var poly_bd = new b2BodyDef();				
+			poly_bd.AddShape(poly_sh);
+			poly_bd.position.Set(0, 0);
+						
+			this.body = physics.world.CreateBody(poly_bd);			
+		}
 
 
 		function View(canvas_id) {
@@ -76,17 +68,54 @@
 			this.ox = this.canvas.width * .5;
 			this.oy = this.canvas.height * .5;
 		}
-		View.prototype.render = function(level, cam_x, cam_y) {
+		View.prototype.render = function(camera) {
+			var cam_aspect = camera.width / camera.height;
+			var view_aspect = 800 / 480;
+			var view_box = {x: camera.x, y: camera.y, width: camera.width, height: camera.height};
+			
+			if (cam_aspect > view_aspect) {
+				var h_added = (view_box.width * (480 / 800) - view_box.height) * .5;
+				view_box.y -= h_added;
+				view_box.height += h_added * 2;
+			}
+			else {
+				var w_added = (view_box.height * (800 / 480) - view_box.width) * .5;
+				view_box.x -= w_added;
+				view_box.width += w_added * 2;
+			}
+			
+			var scale = 800 / view_box.width;
+		
 			var bg = level.background.img,
-				ox = this.ox,
-				oy = this.oy;
-			this.ctx.drawImage(bg, ox - bg.width * .5 + cam_x * .25, oy - bg.height * .5 + cam_y * .25);
+				px = (((view_box.x + view_box.width * .5) + level.w) / (level.w * 2)),
+				py = (((view_box.y + view_box.height * .5) + level.h) / (level.h * 2)),
+				fx = -view_box.x * scale,
+				fy = -view_box.y * scale;
+				
+			px = Math.max(Math.min(1, px), 0);
+			py = Math.max(Math.min(1, py), 0);
+			var bx = (this.canvas.width - bg.width) * px,
+				by = (this.canvas.height - bg.height) * py;
+			this.ctx.drawImage(bg, bx, by, bg.width, bg.height);
 			for (var i = 0; i < level.platforms.length; i++) {
 				var plat = level.platforms[i];
-				this.ctx.drawImage(plat.simg.img, ox + plat.x + cam_x, oy + plat.y + cam_y);
+				this.ctx.drawImage(plat.simg.img, fx + plat.x * scale, fy + plat.y * scale, plat.simg.img.width * scale, plat.simg.img.height * scale);
 			}
+		
+			drawWorld(physics.world, this.ctx, fx, fy, scale / physics.scale);
 		}
 		
+		
+		function Physics() {
+			this.scale = 0.01;
+			var world = new b2AABB();
+			world.minVertex.Set(-50, -50);
+			world.maxVertex.Set(50, 50);
+			var gravity = new b2Vec2(0, 300);
+			var doSleep = true;
+			this.world = new b2World(world, gravity, doSleep);
+		}
+
 		
 		function Keyboard() {
 			var that = this;
@@ -98,7 +127,7 @@
 					that[that.map[event.which]] = true;
 				}
 				else {
-					//console.log(event.which);
+					////console.log(event.which);
 					return true;
 				}
 				return false;
@@ -110,25 +139,114 @@
 				}		
 			});	
 		}
+		
+		
+		function Camera(spring) {
+			this.x = -200;
+			this.y = -400;
+			this.width = 400;
+			this.height = 240;
+			this.spring = spring;
+			this.target = {
+				left: -400,			
+				top: -400,
+				right: 400,
+				bottom: 0,				
+			};
+		}
+		Camera.prototype.update = function() {
+			this.x += (this.target.left - this.x) * this.spring;
+			this.y += (this.target.top - this.y) * this.spring;
+			this.width += (this.target.right - (this.x + this.width)) * this.spring * 2;
+			this.height += (this.target.bottom - (this.y + this.height)) * this.spring * 2;
+		};
 
 
+		function Level(canvas_id) {
+			this.background = null;
+			this.platforms = [];
+			this.w = 0;
+			this.h = 0;
+			this.start_x = 0;
+			this.start_y = 0;
+		}
+		Level.prototype.load = function(name, callback) {
+			var that = this,
+				url = "levels/" + name + "/";
+			
+			$.getJSON(url + "data.json", function(data) {
+				that.background = new SmartImage(url + data.background);
+				that.w = data.horizontal;
+				that.h = data.vertical;
+				that.start_x = data.start_x;
+				that.start_y = data.start_y;
+				for (var i = 0; i < data.platforms.length; i++) {
+					var new_platform = new Platform(url, data.platforms[i]);
+					that.platforms.push(new_platform);
+				}
+				SmartImage.load_all(function() {
+					callback();											
+				});
+			});
+		};
+		
+		
+		function Player(x, y) {
+			this.x = x;
+			this.y = y;
+			this.r = 8;
+			this.body = this._build_body();
+		}
+		Player.prototype._build_body = function() {
+			var circle = new b2CircleDef();
+			circle.density = 0.25;
+			circle.restitution = -0.1;
+			circle.radius = this.r;
+			circle.friction = 1.0;
+			
+			var body = new b2BodyDef();
+			body.AddShape(circle);
+			body.position.Set(this.x, this.y);
+			body.angularDamping = 0.7;
+			body.linearDamping = 0.01;
+			body.allowSleep = false;
+			
+			return physics.world.CreateBody(body);		
+		};
+		
 	
 		var level = new Level();
 		var view = new View('arena');
+		var physics = new Physics();
 		var keyboard = new Keyboard();
+		var camera = new Camera(.02);
 		
-		var camera_x = 0,
-			camera_y = 0;
+		var player = {x: 0, y: 0};
 		
-		function main() {
-			camera_x = (keyboard.left) ? camera_x + 3 : camera_x;
-			camera_x = (keyboard.right) ? camera_x - 3 : camera_x;
-			camera_y = (keyboard.up) ? camera_y + 3 : camera_y;			
-			camera_y = (keyboard.down) ? camera_y - 3 : camera_y;						
-			view.render(level, camera_x, camera_y);
+		//camera.target = player;
+		
+		function start() {
+			player.x = level.start_x;
+			player.y = level.start_y;
+			
+			drawWorld(physics.world, view.ctx, player.x, player.y);
+			
+			window.setInterval(main, 1000 / 77);
+			//main();
 		}
 		
-		level.load('test_level', main);
+		function main() {
+			player.x = (keyboard.left) ? player.x - 10 : player.x;
+			player.x = (keyboard.right) ? player.x + 10 : player.x;
+			player.y = (keyboard.up) ? player.y - 10 : player.y;			
+			player.y = (keyboard.down) ? player.y + 10 : player.y;
+
+			camera.update();
+			view.render(camera);
+			
+		}
+		
+		level.load('test_level', start);	// Start the game after loading!
 	
 	
 	</script>

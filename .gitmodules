@@ -7,3 +7,6 @@
 [submodule "public/js/socketio"]
 	path = public/js/socketio
 	url = git://github.com/LearnBoost/Socket.IO.git
+[submodule "support/redis-node-client"]
+	path = support/redis-node-client
+	url = http://github.com/fictorial/redis-node-client.git

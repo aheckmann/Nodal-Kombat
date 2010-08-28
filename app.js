@@ -14,11 +14,12 @@ var express = require('./support/express')
 
 var app = module.exports = express.createServer(
   express.errorHandler({ dumpExceptions: true, showStack: true})
+, express.conditionalGet()
 , express.logger()
 , express.cookieDecoder()
 , express.bodyDecoder()
 , express.staticProvider(__dirname + '/public')
-, express.staticProvider(__dirname + '/static')
+//, express.staticProvider(__dirname + '/static')
 )
 
 app.configure(function(){

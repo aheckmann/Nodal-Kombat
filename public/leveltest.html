@@ -1,0 +1,147 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Level Test</title>
+        <link rel="stylesheet" href="css/leveltest.css" type="text/css">
+    </head>
+    <body>
+
+	<canvas id="arena" width="800" height="480" />
+
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+	<script type="text/javascript">
+	
+	
+		function SmartImage(src, callback) {
+			var that = this;
+			this.img = new Image();
+			this.src = src;
+			this.img.onload = function () {
+				callback(that.img);
+				SmartImage.queue.slice(SmartImage.queue.indexOf(this), 1);
+				if (SmartImage.queue.length === 0) {
+					SmartImage.callback();
+				}
+			};
+			this.img.onerror = function () {
+				console.log("Error: Couldn't load image " + src);
+			}
+			SmartImage.queue.push(this);
+		}
+		SmartImage.load_all = function(callback) {
+			SmartImage.callback = callback;
+			for (var i = 0; i < SmartImage.queue.length; i++) {
+				SmartImage.queue[i].img.src = SmartImage.queue[i].src;
+			}
+		};
+		SmartImage.queue = [];
+
+
+		
+		function DepthView(canvas_id) {
+			this.canvas = document.getElementById(canvas_id);
+			this.ctx = this.canvas.getContext('2d');
+			this.objects = [];
+			this.fov = 60;
+			this.ox = this.canvas.width * .5;
+			this.oy = this.canvas.height * .5;
+		}
+		DepthView.prototype.add(obj) {		// Obj must have x, y, z & w, h properties + draw() & clear() methods
+			this.objects.push(obj);
+		}
+		DepthView.clear = function() {
+			for (var i = 0; i < this.objects.length; i++) {
+				this.objects[i].clear(this.ctx);
+			}
+		}
+		DepthView.render = function() {
+			this.objects.sort(function(a, b) {
+				return (b.z - a.z);
+			});
+			for (var i = 0; i < this.objects.length; i++) {
+				this.objects[i].draw(this.ctx, this.project(this.objects[i]));
+			}
+		}
+		DepthView.prototype.project = function(obj) {
+			var scale = this.fov / (this.fov + obj.z);
+			var x2d = (this.ox * obj.x * .01 * scale) + this.ox;
+			var y2d = (this.oy * obj.y * .01 * scale) + this.oy;
+			
+			var w2d = obj.w * scale;
+			var h2d = obj.h * scale;
+			
+			return {
+				x: ~~x2d,
+				y: ~~y2d,
+				w: ~~w2d,
+				h: ~~h2d
+			};
+		};
+		
+
+
+		function Platform(plat_data) {
+			var that = this;
+			this.simg = new SmartImage(plat_data.image, function(img) {
+				that.w = img.width;
+				that.h = img.height;
+				that.x = plat_data.left + this.w * ;
+				that.y = plat_data.top;
+				that.z = 0;
+				
+			});
+		}
+		Platform.prototype.draw = function(ctx, rect) {
+			this.simg.draw(ctx, rect)
+		}
+		
+		
+		function Background(bg_data) {
+			this.simg = new SmartImage(bg_data.image, function(img) {
+				this.w = img.width;
+				this.h = img.height;
+			})
+		}
+		
+	
+		function Level(canvas_id) {
+			this.data = {};
+			this.background = null;
+			this.platforms = [];
+		}
+		Level.prototype.load = function(name, callback) {
+			var that = this;
+			var queue = [];
+			$.getJSON(url + "/data.json", function(data) {
+				that.data = data;
+				that.background = new SmartImage(data.background);
+				for (var i = 0; i < data.platforms.length; i++) {
+					var new_platform = new Platform(data.platforms[i]);
+					that.platforms.push(new_platform);
+					view.add(new_platform);
+				}
+				SmartImage.load_all(function() {
+					window.setInterval(callback, 1000 / 77);
+				});
+			});
+		};
+
+
+	
+		var level = new Level();
+		var view = new DepthView('arena');
+		
+		var camera_x = 0,
+			camera_y = 0;
+		
+		function main() {
+			view.render(level);
+		}
+		
+		level.load('test_level', main);
+	
+	
+	</script>
+
+	</body>
+</html>

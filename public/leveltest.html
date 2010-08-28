@@ -48,10 +48,8 @@
 			
 			var poly_sh = new b2PolyDef();
 			poly_sh.vertexCount = plat_data.polygon.length / 2;
-			//console.log("Adding platform with " + plat_data.polygon.length + " points");
 			for (var i = 0; i < plat_data.polygon.length / 2; i++) {
-				//console.log("Adding point at " + plat_data.polygon[i] * physics.scale + ", " + plat_data.polygon[i+1] * physics.scale);
-				poly_sh.vertices[i].Set(plat_data.polygon[i*2], plat_data.polygon[i*2+1]);
+				poly_sh.vertices[i].Set(plat_data.polygon[i*2] * physics.scale, plat_data.polygon[i*2+1] * physics.scale);
 			}
 			poly_sh.restitution = 0.2;
 			poly_sh.friction = 0.4;
@@ -72,34 +70,25 @@
 		}
 		View.prototype.render = function(camera) {
 			var cam_aspect = camera.width / camera.height;
-			//console.log("Camera.width: " + camera.width + ", height: " + camera.height);
 			var view_aspect = 800 / 480;
 			var view_box = {x: camera.x, y: camera.y, width: camera.width, height: camera.height};
 			
 			if (cam_aspect > view_aspect) {
-				//console.log("Extending height...");
 				var h_added = (view_box.width * (480 / 800) - view_box.height) * .5;
-				//console.log("h_added = " + h_added);
 				view_box.y -= h_added;
 				view_box.height += h_added * 2;
 			}
 			else {
-				//console.log("Extending width...");
 				var w_added = (view_box.height * (800 / 480) - view_box.width) * .5;
 				view_box.x -= w_added;
 				view_box.width += w_added * 2;
 			}
 			
-			//console.log("View box:");
-			//console.dir(view_box);			// This is properly calculated
-			
 			var scale = 800 / view_box.width;
-			//console.log("Scale is " + scale);
-
 		
 			var bg = level.background.img,
-				px = .5,//((cam_x + level.w) / (level.w * 2)),
-				py = .5,//((cam_y + level.h) / (level.h * 2)),
+				px = (((view_box.x + view_box.width * .5) + level.w) / (level.w * 2)),
+				py = (((view_box.y + view_box.height * .5) + level.h) / (level.h * 2)),
 				fx = -view_box.x * scale,
 				fy = -view_box.y * scale;
 				
@@ -113,9 +102,7 @@
 				this.ctx.drawImage(plat.simg.img, fx + plat.x * scale, fy + plat.y * scale, plat.simg.img.width * scale, plat.simg.img.height * scale);
 			}
 		
-			//drawWorld(physics.world, this.ctx, fx, fy);
-			//this.ctx.fillStyle ="#f00";
-			//this.ctx.fillRect(fx + -10, fy + -10, 20, 20);
+			drawWorld(physics.world, this.ctx, fx, fy, scale / physics.scale);
 		}
 		
 		
@@ -201,6 +188,30 @@
 					callback();											
 				});
 			});
+		};
+		
+		
+		function Player(x, y) {
+			this.x = x;
+			this.y = y;
+			this.r = 8;
+			this.body = this._build_body();
+		}
+		Player.prototype._build_body = function() {
+			var circle = new b2CircleDef();
+			circle.density = 0.25;
+			circle.restitution = -0.1;
+			circle.radius = this.r;
+			circle.friction = 1.0;
+			
+			var body = new b2BodyDef();
+			body.AddShape(circle);
+			body.position.Set(this.x, this.y);
+			body.angularDamping = 0.7;
+			body.linearDamping = 0.01;
+			body.allowSleep = false;
+			
+			return physics.world.CreateBody(body);		
 		};
 		
 	

@@ -1,11 +1,11 @@
-function drawWorld(world, context, ox, oy) {
+function drawWorld(world, context, ox, oy, scale) {
 	for (var b = world.m_bodyList; b; b = b.m_next) {
 		for (var s = b.GetShapeList(); s != null; s = s.GetNext()) {
-			drawShape(s, context, ox, oy);
+			drawShape(s, context, ox, oy, scale);
 		}
 	}
 }
-function drawShape(shape, context, ox, oy) {
+function drawShape(shape, context, ox, oy, scale) {
 	context.strokeStyle = '#f00';
 	context.beginPath();
 	switch (shape.m_type) {
@@ -38,14 +38,14 @@ function drawShape(shape, context, ox, oy) {
 		{
 			var poly = shape;
 			var tV = b2Math.AddVV(poly.m_position, b2Math.b2MulMV(poly.m_R, poly.m_vertices[0]));
-			context.moveTo(ox + tV.x, oy + tV.y);
+			context.moveTo(ox + tV.x * scale, oy + tV.y * scale);
 			for (var i = 0; i < poly.m_vertexCount; i++) {
 
 				var v = b2Math.AddVV(poly.m_position, b2Math.b2MulMV(poly.m_R, poly.m_vertices[i]));
 				
-				context.lineTo(ox + v.x, oy + v.y);
+				context.lineTo(ox + v.x * scale, oy + v.y * scale);
 			}
-			context.lineTo(ox + tV.x, oy + tV.y);
+			context.lineTo(ox + tV.x * scale, oy + tV.y * scale);
 		}
 		break;
 	}

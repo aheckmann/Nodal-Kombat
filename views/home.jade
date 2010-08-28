@@ -1,0 +1,72 @@
+#container
+  #header
+    h1 Node Knockout
+    #player-box
+      p Playername |
+        a(class="rpxnow", onclick="return false;", href='https://nodeknockout.rpxnow.com/openid/v2/signin?token_url=http%3A%2F%2Fnodelicious.node.de%2Flogin', title='View login page') Sign In 
+    p Someone's gonna get knocked the FU@$ OUT!
+
+    a(id="vote-button", href='http://nodeknockout.com/teams/nodelicious', title='Help me win Node.js KO!', target="nko")
+      img(src="http://nodeknockout.com/images/voteko.png", alt="Help me win Node.js KO!")
+  div#container.cols.xi
+    a(id="leave-game", href='#', title='Leave Game') Leave Game
+    div.col.a
+      h2 Live Action
+      #live-action-container
+        canvas#live-action
+      h2 Team Updates
+      #twitter-feed
+        ul
+          li Keep Voting!
+          li You are all just sheep
+    div.col.b
+      #this-game
+        h2 This Game
+        ul.leaderboard
+          li 
+            | Leader Name
+            | img(src="#", alt="Avatar")
+            | span.score Score
+            | span.badge Badge
+          li
+            | Leader Name
+            | img(src="#", alt="Avatar")
+            | span.score Score
+            | span.badge Badge          
+          li Leader Name
+            | Leader Name
+            | img(src="#", alt="Avatar")
+            | span.score Score
+            | span.badge Badge
+      #top-points
+        h2 Overall Leaders
+        ul.leaderboard
+          li Leader Name
+            img(src="#", alt="Avatar")
+            span.score Score
+            span.place 1st
+          li Leader Name
+            img(src="#", alt="Avatar")
+            span.score Score
+            span.place 2nd
+          li Leader Name
+            img(src="#", alt="Avatar")
+            span.score Score
+            span.place 3rd
+        
+      .divider
+      ul.leaderboard
+        li You
+          img(src="#", alt="Avatar")
+          span.score Score
+          span.place 223rd
+        
+      a(id="start", href="#") Start Busting Skulls!
+      
+      #live-game-updates
+        h2 Live Game Updates
+        ul.updates
+          li JoeZilla knocks out cockenballs!
+          li SidVicious wins 3rd straight!
+    
+    #footer

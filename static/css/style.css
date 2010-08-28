@@ -4,8 +4,14 @@ p {
 	margin: 0;
 }
 
-h1 {
-	margin-bottom: 0px;
+ul {
+	list-style-type: none;
+	padding: 0px;
+	margin: 0px;
+}
+
+h1,h2 {
+	margin: 0px;
 }
 
 /*Layout*/
@@ -13,6 +19,7 @@ h1 {
 	margin: auto;
 	width: 1200px;
 	position: relative;
+	margin-bottom: 30px;
 }
 
 #footer {
@@ -20,32 +27,127 @@ h1 {
 	border: 1px solid black;
 	height: 1em;
 	clear: both;
+	padding-top: 30px;
 }
 
-/*Elements*/
-
+/*Home and Game*/
 #vote-button img {
+	position: absolute;
 	border: 0px;
+}
+#index #vote-button img {
 	top: 7px;
 	left:615px;
-	position: absolute;
 }
 
 #player-box {
-	float: right;
-	padding-right: 70px;
+	position: absolute;
+	left: 805px;
 }
 
 #leave-game {
-	display: none;
 	position: absolute;
-	top: 75px;
+	top: 10px;
 	left: 1px;
 }
 
-#this-game {
-	display: none;
+.leaderboard {
+	margin-bottom: 50px;
 }
+
+#live-action-container {
+	height: 490px;
+	background-color: green;
+	position: relative;
+}
+
+#game-info {
+	text-align: center;
+	height: 1.2em;
+	background-color: blue;
+}
+
+.bottom-box {
+	margin: 15px 0;
+}
+
+
+/* Modals */
+#character-selection-container {
+	width: 700px;
+	position: relative;
+	float: left;
+}
+
+#character-selection-container #vote-button img{
+	top: -10px;
+	right: 30px;
+}
+
+.character-container {
+	float: left;
+	height: 200px;
+	width: 150px;
+	text-align: center;
+	padding: 10px;
+	border: 2px solid white;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	cursor: pointer;
+	margin-top: 20px;
+}
+
+.character-container img {
+	height: 180px;
+	width:  100px;
+}
+
+.character-container span {
+	display: block;
+}
+
+.character-container.selected {
+	border: 2px solid black;
+}
+
+.character-container:hover {
+	border: 2px solid orange;
+}
+
+.character-container.selected:hover {
+	border: 2px solid black;
+}
+
+#choose-character-button {
+	margin: 10px 60px 0 0;
+	clear: both;
+	float: right;
+}
+
+#summary-container {
+	text-align: center;
+	width: 400px;
+}
+
+#summary-container #vote-button img{
+	position: static;
+}
+
+#summary-leaderboard {
+	margin: auto;
+	width: 300px;
+	padding: 15px;
+}
+
+#next-game-button {
+	
+}
+
+
+
+
+
 
 
 /* helpers */
@@ -53,6 +155,17 @@ h1 {
 	display: none;
 }
 
+.button {
+	display: block;
+}
+
+.clear {
+	clear: both;
+}
+
+.right {
+	text-align: right;
+}
 
 /* Modal */
 #simplemodal-container a.modalCloseImg {
@@ -80,6 +193,7 @@ h1 {
 #login-iframe {
 	width: 400px; 
 	height: 170px;
+	overflow: hidden;
 }
 
 #login-modal-text {

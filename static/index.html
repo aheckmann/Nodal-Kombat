@@ -4,6 +4,17 @@
 	<meta charset="utf-8" />
 	<title>Node Knockout</title> 
 	<link rel="stylesheet" href="css/style.css" type="text/css" />
+	<script type="text/javascript" src="js/jquery.js"></script>
+	<script type="text/javascript" src="js/knockout.js"></script>
+	<script type="text/javascript" src="js/simpleModal.js"></script>
+
+	 <script type="text/javascript">
+	  	var rpxJsHost = (("https:" == document.location.protocol) ? "https://" : "http://static.");
+	  	document.write(unescape("%3Cscript src='" + rpxJsHost + "rpxnow.com/js/lib/rpx.js' type='text/javascript'%3E%3C/script%3E"));
+		RPXNOW.overlay = true;
+		RPXNOW.language_preference = 'en';
+	</script>
+		
 </head>
 	 
 <body id="index">
@@ -14,7 +25,8 @@
 			
 			<h1>Node Knockout</h1>
 			<div id="player-box">
-				Playername | <a href="#">logout/in</a>
+				Playername | 
+				 <a class="rpxnow" onclick="return false;" href="https://nodeknockout.rpxnow.com/openid/v2/signin?token_url=http%3A%2F%2Fnodelicious.node.de%2Flogin"> Sign In </a> 
 			</div>
 			<p>
 				Someone's gonna get knocked the FU@$ OUT!
@@ -28,8 +40,8 @@
 		</div>
 		
 		
-		<div class="cols xi">
-		
+		<div id="container" class="cols xi">
+			<a href="#" id="leave-game">Leave Game</a>
 			<div class="col a">
 				<!-- Live action container -->
 				<h2>Live Action</h2>

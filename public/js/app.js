@@ -8,6 +8,11 @@
     , start: function(){ console.log("ko.start"); console.log(arguments) }
     , gameover: function(){ console.log("ko.gameover"); console.log(arguments) }
     , playerquit: function(){ console.log("playerquit"); console.log(arguments) }
+    , countdown: function(){ console.log("countdown"); console.log(arguments) }
+    }
+  , send: function(event){
+      if (!(event && event.method)) return 
+      return socket.send(event)
     }
   }
 
@@ -15,30 +20,20 @@
   socket.connect()
   socket.send("join")
   socket.on("message", function(message){
-      
+     //console.dir(message)
+    
     // don't use JSON.parsing, too slow
-    // "e:jump#40,400,60|e:punch|e:gameover"
+    // "jump#40,400,60|e:punch|e:gameover"
 
     var msg = message.split("|")
+      , ko = window.ko
       , tok
     while (tok = msg.shift()){
-      console.log(tok)
       tok = tok.split("#")
-      ko[tok[0]].apply(ko, tok[1].split(","))
+      ko.handle[tok[0]].apply(ko, tok.length > 1 ? tok[1].split(",") : [])
     }
 
   })
 
-  window.ko = {
-    send: function(data){
-      if ("string" == typeof data)
-        return socket.send(data)
-      var msg = ""
-        , key
-      for (key in data)
-        msg += key + ":" + data[key] + "|"
-      socket.send(msg)
-    }
-  }
 
 })(jQuery, io)

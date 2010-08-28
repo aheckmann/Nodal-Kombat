@@ -1,12 +1,36 @@
-#vote-button img {
-	position: fixed; 
-	top: 5px; 
-	right: 5px; 
-	border: 0px;
+p {
+	padding: 0;
+	margin: 0;
 }
 
+#vote-button img {
+	border: 0px;
+	top: 7px;
+	left:615px;
+	position: absolute;
+}
 
+#container {
+	margin: auto;
+	width: 1200px;
+	position: relative;
+}
 
+h1 {
+	margin-bottom: 0px;
+}
+
+#player-box {
+	float: right;
+	padding-right: 70px;
+}
+
+#footer {
+	background-color: silver;
+	border: 1px solid black;
+	height: 1em;
+	clear: both;
+}
 
 
 

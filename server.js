@@ -48,6 +48,10 @@ app.get('/', function(req, res){
   res.render('index.jade', { locals: { name: "knockout" } } )
 })
 
+
+
+
+
 app.get('/ohai-redis', function(req, res){
 	redis.info(function (err, info) {
 	    if (err) throw new Error(err)

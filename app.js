@@ -11,7 +11,7 @@ require.paths.unshift(
 
 var express = require('./support/express')
 
-var app = express.createServer(
+var app = module.exports = express.createServer(
   express.errorHandler({ dumpExceptions: true, showStack: true})
 , express.logger()
 , express.cookieDecoder()
@@ -19,8 +19,6 @@ var app = express.createServer(
 , express.staticProvider(__dirname + '/public')
 , express.staticProvider(__dirname + '/static')
 )
-
-App= module.exports = app
 
 app.configure(function(){
   app.set('views', __dirname + '/views')

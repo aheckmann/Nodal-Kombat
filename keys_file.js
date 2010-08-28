@@ -13,4 +13,4 @@ exports.foursquareConsumerKey= "";
 exports.foursquareConsumerSecret= "";
 exports.janrainApiKey= "24022fac64476b7787628ac4f69f1b80238d2af3";
 exports.janrainAppDomain= "nodelicious";
-exports.janrainCallbackUrl= "http://nodelicious.no.de/auth/janrain_callback";
+exports.janrainCallbackUrl= "http://"+HOST+"/auth/janrain_callback";

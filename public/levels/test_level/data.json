@@ -1,16 +1,13 @@
 {
-	'name':'Test Level',
-	'author':'Hunter Loftis',
-	'background': {
-		'image':'background.jpg',
-		'z':200
-	}
-	'platforms': [
+	"name":"Test Level",
+	"author":"Hunter Loftis",
+	"background": "background.jpg",
+	"platforms": [
 		{
-			'image':'platform_main.png',
-			'left':-231,
-			'top':193,
-			'polygon':[
+			"image":"platform_main.png",
+			"left":-231,
+			"top":193,
+			"polygon":[
 				-230, 194,
 				230, 194,
 				230, 250,
@@ -18,10 +15,10 @@
 			]
 		},
 		{
-			'image':'platform_side.png',
-			'left':-352,
-			'top':'0',
-			'polygon':[
+			"image":"platform_side.png",
+			"left":-352,
+			"top":0,
+			"polygon":[
 				-352, 0,
 				-122, 0,
 				-122, 50,
@@ -29,10 +26,10 @@
 			]
 		},
 		{
-			'image':'platform_side.png',
-			'left':122,
-			'top':0,
-			'polygon':[
+			"image":"platform_side.png",
+			"left":122,
+			"top":0,
+			"polygon":[
 				122, 0,
 				352, 0,
 				352, 50,
@@ -40,10 +37,10 @@
 			]
 		},
 		{
-			'image':'platform_nko_block.png',
-			'left':-46,
-			'top':-192,
-			'polygon':[
+			"image":"platform_nko_block.png",
+			"left":-46,
+			"top":-192,
+			"polygon":[
 				-46, -192,
 				46, -192,
 				46, -99,

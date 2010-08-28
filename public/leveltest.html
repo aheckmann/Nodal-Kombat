@@ -17,125 +17,115 @@
 			this.img = new Image();
 			this.src = src;
 			this.img.onload = function () {
-				callback(that.img);
-				SmartImage.queue.slice(SmartImage.queue.indexOf(this), 1);
+				////console.log("Loaded " + src);
+				callback && callback(that.img);
+				SmartImage.queue.splice(SmartImage.queue.indexOf(that), 1);
 				if (SmartImage.queue.length === 0) {
 					SmartImage.callback();
 				}
 			};
 			this.img.onerror = function () {
-				console.log("Error: Couldn't load image " + src);
+				//console.log("Error: Couldn't load image " + src);
 			}
 			SmartImage.queue.push(this);
 		}
 		SmartImage.load_all = function(callback) {
+			//console.log("Loading all...");
 			SmartImage.callback = callback;
 			for (var i = 0; i < SmartImage.queue.length; i++) {
 				SmartImage.queue[i].img.src = SmartImage.queue[i].src;
 			}
 		};
 		SmartImage.queue = [];
-
-
-		
-		function DepthView(canvas_id) {
-			this.canvas = document.getElementById(canvas_id);
-			this.ctx = this.canvas.getContext('2d');
-			this.objects = [];
-			this.fov = 60;
-			this.ox = this.canvas.width * .5;
-			this.oy = this.canvas.height * .5;
-		}
-		DepthView.prototype.add(obj) {		// Obj must have x, y, z & w, h properties + draw() & clear() methods
-			this.objects.push(obj);
-		}
-		DepthView.clear = function() {
-			for (var i = 0; i < this.objects.length; i++) {
-				this.objects[i].clear(this.ctx);
-			}
-		}
-		DepthView.render = function() {
-			this.objects.sort(function(a, b) {
-				return (b.z - a.z);
-			});
-			for (var i = 0; i < this.objects.length; i++) {
-				this.objects[i].draw(this.ctx, this.project(this.objects[i]));
-			}
-		}
-		DepthView.prototype.project = function(obj) {
-			var scale = this.fov / (this.fov + obj.z);
-			var x2d = (this.ox * obj.x * .01 * scale) + this.ox;
-			var y2d = (this.oy * obj.y * .01 * scale) + this.oy;
-			
-			var w2d = obj.w * scale;
-			var h2d = obj.h * scale;
-			
-			return {
-				x: ~~x2d,
-				y: ~~y2d,
-				w: ~~w2d,
-				h: ~~h2d
-			};
-		};
 		
 
 
-		function Platform(plat_data) {
-			var that = this;
-			this.simg = new SmartImage(plat_data.image, function(img) {
-				that.w = img.width;
-				that.h = img.height;
-				that.x = plat_data.left + this.w * ;
-				that.y = plat_data.top;
-				that.z = 0;
-				
-			});
-		}
-		Platform.prototype.draw = function(ctx, rect) {
-			this.simg.draw(ctx, rect)
-		}
-		
-		
-		function Background(bg_data) {
-			this.simg = new SmartImage(bg_data.image, function(img) {
-				this.w = img.width;
-				this.h = img.height;
-			})
+		function Platform(img, x, y) {
+			this.simg = new SmartImage(img);
+			this.x = x;
+			this.y = y;
 		}
 		
 	
 		function Level(canvas_id) {
-			this.data = {};
 			this.background = null;
 			this.platforms = [];
 		}
 		Level.prototype.load = function(name, callback) {
-			var that = this;
-			var queue = [];
-			$.getJSON(url + "/data.json", function(data) {
-				that.data = data;
-				that.background = new SmartImage(data.background);
+			var that = this,
+				url = "levels/" + name + "/";
+			
+			$.getJSON(url + "data.json", function(data) {
+				//console.log("Got the level");
+				that.background = new SmartImage(url + data.background);
 				for (var i = 0; i < data.platforms.length; i++) {
-					var new_platform = new Platform(data.platforms[i]);
+					var new_platform = new Platform(url + data.platforms[i].image, data.platforms[i].left, data.platforms[i].top);
 					that.platforms.push(new_platform);
-					view.add(new_platform);
 				}
 				SmartImage.load_all(function() {
+					//console.log("Starting loop...");
 					window.setInterval(callback, 1000 / 77);
 				});
 			});
 		};
 
 
+		function View(canvas_id) {
+			this.canvas = document.getElementById(canvas_id);
+			this.ctx = this.canvas.getContext('2d');
+			this.ox = this.canvas.width * .5;
+			this.oy = this.canvas.height * .5;
+		}
+		View.prototype.render = function(level, cam_x, cam_y) {
+			var bg = level.background.img,
+				ox = this.ox,
+				oy = this.oy;
+			this.ctx.drawImage(bg, ox - bg.width * .5 + cam_x * .25, oy - bg.height * .5 + cam_y * .25);
+			for (var i = 0; i < level.platforms.length; i++) {
+				var plat = level.platforms[i];
+				this.ctx.drawImage(plat.simg.img, ox + plat.x + cam_x, oy + plat.y + cam_y);
+			}
+		}
+		
+		
+		function Keyboard() {
+			var that = this;
+			
+			this.map = {'38':'up', '39':'right', '40':'down', '37':'left'};
+				
+			$(document).keydown(function (event) {
+				if (that.map[event.which]) {
+					that[that.map[event.which]] = true;
+				}
+				else {
+					//console.log(event.which);
+					return true;
+				}
+				return false;
+			});
+			
+			$(document).keyup(function (event) {
+				if (that.map[event.which]) {
+					that[that.map[event.which]] = false;
+				}		
+			});	
+		}
+
+
 	
 		var level = new Level();
-		var view = new DepthView('arena');
+		var view = new View('arena');
+		var keyboard = new Keyboard();
 		
 		var camera_x = 0,
 			camera_y = 0;
 		
 		function main() {
-			view.render(level);
+			camera_x = (keyboard.left) ? camera_x + 3 : camera_x;
+			camera_x = (keyboard.right) ? camera_x - 3 : camera_x;
+			camera_y = (keyboard.up) ? camera_y + 3 : camera_y;			
+			camera_y = (keyboard.down) ? camera_y - 3 : camera_y;						
+			view.render(level, camera_x, camera_y);
 		}
 		
 		level.load('test_level', main);

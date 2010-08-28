@@ -30,7 +30,7 @@ app.configure(function(){
 
 require("./lib/redis")
 require("./lib/oauth")
-require("./lib/routes")(app)
+require("./lib/routes")
 
 // sockets 
 var sock = io.listen(app)

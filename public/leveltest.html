@@ -155,11 +155,13 @@
 		}
 		
 		
-		function Camera(spring) {
+		function Camera(spring, margin_x, margin_y) {
 			this.x = -200;
 			this.y = -500;
 			this.width = 400;
 			this.height = 240;
+			this.margin_x = margin_x;
+			this.margin_y = margin_y;
 			this.spring = spring;
 			this.target = {
 				left: -400,			
@@ -167,8 +169,23 @@
 				right: 400,
 				bottom: 0,				
 			};
+			this.players = [];
 		}
 		Camera.prototype.update = function() {
+			// Track players
+			if (this.players.length > 0) {
+				this.target = {left: 1000, top: 1000, right: -1000, bottom: -1000};
+				for (var i = 0; i < this.players.length; i++) {
+					var p = this.players[i];
+					//console.dir(p.body);
+					var x = p.body.m_position.x / physics.scale;
+					var y = p.body.m_position.y / physics.scale;
+					this.target.left = Math.min((x - this.margin_x), this.target.left);
+					this.target.right = Math.max((x + this.margin_x), this.target.right);
+					this.target.top = Math.min((y - this.margin_y), this.target.top);
+					this.target.bottom = Math.max((y + this.margin_y), this.target.bottom);
+				}
+			}
 			var right = this.x + this.width,
 				bottom = this.y + this.height;
 			this.x += (this.target.left - this.x) * this.spring;
@@ -275,20 +292,29 @@
 			}			
 		};
 		
+		
+		function Game() {
+			this.players = [];
+			this.top = this.left = this.bottom = this.right = 0;
+		}
+
+		
 	
 		var level = new Level();
 		var view = new View('arena');
 		var physics = new Physics();
 		var keyboard = new Keyboard();
-		var camera = new Camera(.02);
-		var player = new Player(0, -250);
+		var camera = new Camera(.04, 100, 100);
 		
+		var player = new Player(0, -250);		
+		var npc = new Player(20, -200);
+		
+		camera.players.push(player);
+		camera.players.push(npc);
 		
 		//camera.target = player;
 		
 		function start() {
-			player.x = level.start_x;
-			player.y = level.start_y;
 			
 			drawWorld(physics.world, view.ctx, player.x, player.y);
 			
@@ -297,8 +323,8 @@
 		}
 		
 		function main() {
+			player.handle_input();		
 			physics.step();
-			player.handle_input();
 			camera.update();
 			view.render(camera);
 			keyboard.monitor();			

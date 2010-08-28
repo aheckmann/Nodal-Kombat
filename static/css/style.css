@@ -1,0 +1,48 @@
+#vote-button img {
+	position: fixed; 
+	top: 5px; 
+	right: 5px; 
+	border: 0px;
+}
+
+
+
+
+
+
+
+/* NESTED COLUMNS */
+.col {
+	float: left;
+	width: 300px;
+	margin-top: 30px;
+}
+
+.cols {
+	height:1%;
+	clear:both;}
+.cols:after {
+	content: ".";
+	display:block;
+	height:0;
+	clear:both;
+	visibility:hidden;}
+.a { clear:left; }
+.a, .b, .c, .d {
+	width:24.7%;
+	float:left;
+	position:relative;}
+.cols .cols .a, .cols .cols .b, .cols .cols .c, .cols .cols .d { width:24.7%; }
+body .xxx .a, body .xxx .b, body .xxx .c, body .ix .a, body .xi .b, .cols .xxx .a, .cols .xxx .b, .cols .xxx .c, .cols .ix .a, .cols .xi .b { width:33%; }
+body .xx .a, body .xx .b, body .xii .a, body .ixi .b, body .iix .c, .cols .xx .a, .cols .xx .b, .cols .xii .a, .cols .ixi .b, .cols .iix .c { width:49.5%; }
+body .ix .b, body .xi .a, .cols .ix .b, .cols .xi .a { width:66%; }
+body .xxi .a, body .ixx .b, .cols .xxi .a, .cols .ixx .b { width:74.5%; }
+.cols {
+	margin-right:15px !important;
+	width:auto;}
+body .xxx, body .xii, body .xii, body .ixi, body .iix { margin-right:30px !important; }
+body .xxxx { margin-right:45px !important; }
+.b, .cols .cols .b { left:15px; }
+.c, .cols .cols .c { left:30px; }
+.d, .cols .cols .d { left:45px; }
+ul.cols { margin-left:0 !important; }

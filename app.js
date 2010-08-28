@@ -12,14 +12,16 @@ var app = express.createServer(
   express.logger()
 , express.cookieDecoder()
 , express.bodyDecoder()
-, express.staticProvider(__dirname + '/public')
 );
 
-app.set('views', __dirname + '/views');
+app.configure(function(){
+  app.set('views', __dirname + '/views')
+});
 
 app.get('/', function(req, res){
   res.render('index.jade', { locals: { name: "knockout" } } );    
 })
 
 
+app.use(express.staticProvider(__dirname + '/public'))
 app.listen(3000);

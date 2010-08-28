@@ -17,6 +17,7 @@ var app = express.createServer(
 , express.cookieDecoder()
 , express.bodyDecoder()
 , express.staticProvider(__dirname + '/public')
+, express.staticProvider(__dirname + '/static')
 )
 
 App= module.exports = app

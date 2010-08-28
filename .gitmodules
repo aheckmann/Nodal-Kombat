@@ -10,3 +10,9 @@
 [submodule "support/redis-node-client"]
 	path = support/redis-node-client
 	url = http://github.com/fictorial/redis-node-client.git
+[submodule "support/connect-auth"]
+	path = support/connect-auth
+	url = http://github.com/ciaranj/connect-auth.git
+[submodule "support/node-oauth"]
+	path = support/node-oauth
+	url = http://github.com/ciaranj/node-oauth.git

@@ -240,6 +240,7 @@
 			this.air_jump = true;
 			this.body = this._build_body();
 			Player.all.push(this);
+			camera.players.push(this);
 		}
 		Player.all = [];
 		Player.prototype._build_body = function() {
@@ -354,16 +355,13 @@
 		
 		ko.handle.playerjoin = function(id) {
 			new Player(id);
-		}
+		};
 		ko.handle.position = function(id, x, y) {
 			for (var i = 0; i < Player.all.length; i++) {
 				Player.all[i].body.m_position.x = x;
 				Player.all[i].body.m_position.y = y;
 			}
-		}
-		
-		camera.players.push(player);
-		camera.players.push(npc);
+		};
 		
 		//camera.target = player;
 		
@@ -372,6 +370,7 @@
 			ko.handle.start = function() {
 				window.setInterval(main, 1000 / 77);
 			}
+			ko.send({ method: "join" });
 			//main();
 		}
 		

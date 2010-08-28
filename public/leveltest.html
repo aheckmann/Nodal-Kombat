@@ -350,16 +350,21 @@
 		var keyboard = new Keyboard();
 		var camera = new Camera(.04, 100, 100);
 		
-		var player = new Player("me");		
+		var player;
 		
-		
+		ko.handle.receiveid = function(id) {
+			player = new Player(id);		
+		}
 		ko.handle.playerjoin = function(id) {
+			console.log("Player joined with id " + id + "!");
 			new Player(id);
 		};
 		ko.handle.position = function(id, x, y) {
 			for (var i = 0; i < Player.all.length; i++) {
-				Player.all[i].body.m_position.x = x;
-				Player.all[i].body.m_position.y = y;
+				if (Player.all[i].id === id) {
+					Player.all[i].body.m_position.x = x;
+					Player.all[i].body.m_position.y = y;
+				}
 			}
 		};
 		
@@ -370,7 +375,7 @@
 			ko.handle.start = function() {
 				window.setInterval(main, 1000 / 77);
 			}
-			ko.send({ method: "join" });
+			ko.join();
 			//main();
 		}
 		

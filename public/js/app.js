@@ -23,7 +23,7 @@
   var socket = new io.Socket(location.hostname)
   socket.connect()
   socket.on("message", function(message){
-    console.dir(message)
+    //console.dir(message)
     
     // don't use JSON.parsing, too slow
     // "jump#40,400,60|e:punch|e:gameover"

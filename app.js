@@ -25,6 +25,7 @@ app.get('/', function(req, res){
 
 
 app.use(express.staticProvider(__dirname + '/public'))
+console.log("running on http://localhost:3000/")
 app.listen(3000);
 
 process.on("uncaughtException", function(err){

@@ -15,11 +15,13 @@
       if (!(event && event.method)) return 
       return socket.send(event)
     }
+  , join: function(){
+      socket.send("join")
+    }
   }
 
   var socket = new io.Socket(location.hostname)
   socket.connect()
-  socket.send("join")
   socket.on("message", function(message){
     console.dir(message)
     

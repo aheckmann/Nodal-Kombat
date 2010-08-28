@@ -116,7 +116,7 @@
 			this.world = new b2World(world, gravity, doSleep);
 		}
 		Physics.prototype.step = function () {
-			this.world.Step(1 / 30, 5);
+			this.world.Step(Math.min(1 / 20, game.slice / 600), 3);
 		}
 
 		
@@ -230,7 +230,7 @@
 			this.x = x;
 			this.y = y;
 			this.r = 8 * physics.scale;
-			this.air_jump = false;
+			this.air_jump = true;
 			this.body = this._build_body();
 		}
 		Player.prototype._build_body = function() {
@@ -258,6 +258,9 @@
 			}
 			if (keyboard.space.down && keyboard.space.first) {
 				this._jump();
+			}
+			if (this.body.GetContactList()) {
+				this.air_jump = true;
 			}
 		};
 		Player.prototype._run = function(x) {
@@ -294,12 +297,36 @@
 		
 		
 		function Game() {
-			this.players = [];
-			this.top = this.left = this.bottom = this.right = 0;
+			this.target_fps = 77;	// 80 seems to be the max Chrome can handle
+			this.frame = 0;
+			this.slice = 0;		// Current time slice
+			this.tick = 0;
+			this.fps = 0;
+			this.fps_lastframe = 0;
+			this.fps_lasttick = 0;
+		}
+		Game.get_tick = function () {
+			return new Date().getTime();
+		};
+		Game.prototype.update_fps = function () {
+			var frame_difference = this.frame - this.fps_lastframe;
+			if (frame_difference > this.target_fps) {
+				this.fps = ~~((frame_difference / (this.tick - this.fps_lasttick)) * 1000);
+				this.fps_lastframe = this.frame;
+				this.fps_lasttick = this.tick;
+			}
+		};
+		Game.prototype.update_slice = function () {
+			var tick = Game.get_tick();
+			this.slice = tick - this.tick;
+			this.tick = tick;
+		};
+		Game.prototype.start = function() {	
+			this.tick = Game.get_tick();
 		}
 
 		
-	
+		var game = new Game();
 		var level = new Level();
 		var view = new View('arena');
 		var physics = new Physics();
@@ -323,6 +350,8 @@
 		}
 		
 		function main() {
+			game.frame += 1;		
+			game.update_slice();		
 			player.handle_input();		
 			physics.step();
 			camera.update();

@@ -6,7 +6,7 @@ function drawWorld(world, context, ox, oy, scale) {
 	}
 }
 function drawShape(shape, context, ox, oy, scale) {
-	context.strokeStyle = '#0ff';
+	context.strokeStyle = '#fff';
 	context.beginPath();
 	switch (shape.m_type) {
 	case b2Shape.e_circleShape:

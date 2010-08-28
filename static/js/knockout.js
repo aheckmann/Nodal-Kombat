@@ -1,16 +1,6 @@
 $.modal.defaults.overlayClose = true;
 
 var knockout = {
-	setPageMode: function(game) {
-	if(game) {
-		$("#this-game").slideDown()
-		$("#leave-game").fadeIn();
-	} else {
-		$("#this-game").slideUp()
-		$("#leave-game").fadeOut();
-	}
-	
-	},
 	
 	init: function() {
 		//login/logout
@@ -20,8 +10,18 @@ var knockout = {
 		  	
 		//twitter updates
 		
-		//
+		
+		
+		
 	}
 }
 
 knockout.init();
+
+
+
+//Some events
+$(".character-container").click(function(){
+	$(".character-container").removeClass("selected");
+	$(this).addClass("selected");	
+})

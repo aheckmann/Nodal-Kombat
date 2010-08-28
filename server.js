@@ -11,7 +11,6 @@ require.paths.unshift(
 )
 
 var express = require('./support/express')
-  , redis_client = require('redis-client')
   , http = require('http')
   , sys = require('sys')
   , io = require("./support/socketio")
@@ -20,12 +19,8 @@ var express = require('./support/express')
 	, auth= require('auth')
 	, OAuth= require('oauth').OAuth;
 
+require("./lib/redis")
 
-var redis = redis_client.createClient(9227, "goosefish.redistogo.com")
-var dbAuth = function() { redis.auth('0cf510f78c1288170fed3dfb436bd9fb'); }
-redis.addListener('connected', dbAuth);
-redis.addListener('reconnected', dbAuth);
-dbAuth();
 
 var app = express.createServer(
   express.errorHandler({ dumpExceptions: true, showStack: true})
@@ -68,36 +63,7 @@ app.configure(function(){
 })
 
 
-// routes 
-app.get('/', function(req, res){
-  res.render('index.jade', { locals: { name: "knockout" } } )
-})
-
-app.get ('/auth/twitter', function(req, res, params) {
-  req.authenticate(['twitter'], function(error, authenticated) { 
-    if( authenticated ) {
-      // oa.getProtectedResource("http://twitter.com/statuses/user_timeline.xml", "GET",
-      //                         req.getAuthDetails()["twitter_oauth_token"], req.getAuthDetails()["twitter_oauth_token_secret"],  function (error, data) {
-				res.send("You logged in as: " + req.getAuthDetails().user.username);
-				res.end()
-      // });
-    }
-    else {
-      res.writeHead(200, {'Content-Type': 'text/html'})
-      res.end("<html><h1>Twitter authentication failed :( </h1></html>")
-    }
-  });
-})
-
-app.get('/ohai-redis', function(req, res){
-	redis.info(function (err, info) {
-	    if (err) throw new Error(err)
-			redis.close()
-			res.send("Redis Version is: " + info.redis_version);
-			res.end()
-	});
-});
-
+require("./lib/routes")(app)
 
 // sockets 
 var sock = io.listen(app)

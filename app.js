@@ -2,7 +2,7 @@
 require.paths.unshift(
   __dirname + '/support/express/support/connect/lib/'
 , __dirname + '/support/jade/lib/'
-, __dirname + '/support/redis-node-client/lib',
+, __dirname + '/support/redis-node-client/lib'
 , __dirname + '/support/node-formidable/lib/formidable/'
 )
  

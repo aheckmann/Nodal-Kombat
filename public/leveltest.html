@@ -70,21 +70,21 @@
 		}
 		View.prototype.render = function(camera) {
 			var cam_aspect = camera.width / camera.height;
-			var view_aspect = 800 / 480;
+			var view_aspect = this.canvas.width / this.canvas.height;
 			var view_box = {x: camera.x, y: camera.y, width: camera.width, height: camera.height};
 			
 			if (cam_aspect > view_aspect) {
-				var h_added = (view_box.width * (480 / 800) - view_box.height) * .5;
+				var h_added = (view_box.width * (view.canvas.height / this.canvas.width) - view_box.height) * .5;
 				view_box.y -= h_added;
 				view_box.height += h_added * 2;
 			}
 			else {
-				var w_added = (view_box.height * (800 / 480) - view_box.width) * .5;
+				var w_added = (view_box.height * (this.canvas.width / this.canvas.height) - view_box.width) * .5;
 				view_box.x -= w_added;
 				view_box.width += w_added * 2;
 			}
 			
-			var scale = 800 / view_box.width;
+			var scale = this.canvas.width / view_box.width;
 		
 			var bg = level.background.img,
 				px = (((view_box.x + view_box.width * .5) + level.w) / (level.w * 2)),
@@ -331,7 +331,6 @@
 		}
 		
 		level.load('test_level', start);	// Start the game after loading!
-	
 	
 	</script>
 

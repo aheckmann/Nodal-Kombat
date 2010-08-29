@@ -1,4 +1,4 @@
-;(function($, io){
+;(function($, io, toString){
   io.setPath("/js/socketio/")
 
   window.ko = {
@@ -12,9 +12,12 @@
     , kill: function(killer, victim){ console.log("%s killed %s", killer, victim) }
     , chatspeed: function(speed){ console.log("set the game speed to %s", speed) }
     }
-  , send: function(event){
-      if (!(event && event.method)) return 
-      return socket.send(event)
+  , send: function(events){
+      if (!events) return
+      if ("[object Array]" != toString.call(events)){
+        events = [events];
+      }
+      socket.send(events)
     }
   , join: function(){
       socket.send("join")
@@ -268,6 +271,7 @@
       url = "levels/" + name + "/";
     
     $.getJSON(url + "data.json", function(data) {
+      that.deathline = data.deathline;
       that.background = new SmartImage(url + data.background);
       that.w = data.horizontal;
       that.h = data.vertical;
@@ -331,11 +335,17 @@
     this.x = x;
     this.y = y;
     this.r = 8;
+    this.lastHitBy = null;
     this.air_jump = true;
     this.body = this._build_body();
-  }
+  } 
   Player.prototype.push = function() {
-    ko.send({method: "position", args: [this.id, this.x, this.y] });
+    var data = {method: "position", args: [this.id, this.x, this.y] }
+    if (!this.DEAD && this.y < level.deathline){
+      this.DEAD = true
+      data = [data, {method: "die", args:[this.lastHitBy || this.id]}];
+    }
+    ko.send(data);
   };
   Player.prototype.moveTo = function(x, y) {
     this.x = this.body.m_position.x = x;
@@ -462,7 +472,7 @@
   }
   
   ko.handle.receiveid = function(id) {	
-    player = new Player(id, 0, -250);		
+    player = window.player = new Player(id, 0, -250);		
     camera.players.push(player);			
   }
 
@@ -515,4 +525,4 @@
 
 
 
-})(jQuery, io)
+})(jQuery, io, Object.prototype.toString)

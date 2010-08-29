@@ -8,6 +8,7 @@
     , start: function(){ log("ko.start"); log(arguments) }
     , playerquit: function(){ log("playerquit"); log(arguments) }
     , countdown: function(){ log("countdown"); log(arguments) }
+    , gametimer: function(){ log("gametimer"); log(arguments) }
     , status: function(){log("status: gameover");log(arguments) }
     , kill: function(killer, victim){ log("%s killed %s", killer, victim) }
     , chatspeed: function(speed){ log("set the game speed to %s", speed) }

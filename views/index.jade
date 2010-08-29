@@ -17,51 +17,33 @@
   div#container.cols.xi
     div.col.a.top
       #live-action-container
-        canvas#live-action
+        -//canvas#live-action
+        img#live-action-placeholder(src="/css/img/aaron3.png")
     div.col.b.top
       .leaderboard
         h2 Leaderboard 
         h2.kill-label Kills
         ul.leaderboard
-          li
-            .name Stanco
-            .avatar <img src="http://0.gravatar.com/avatar/987da1e668e6eb5cde64b52a477764ec?s=69&d=identicon" alt="avatar">
-            .score 12
-            .badges
-            .rank 1
-          li
-            .name Loquacious Joe
-            .avatar <img src="http://1.gravatar.com/avatar/ab1f64abf81653d5a60d78a86a26bec1?s=69&d=identicon" alt="avatar">
-            .score 10
-            .badges
-            .rank 2
-          li
-            .name Grindrrr
-            .avatar <img src="http://2.gravatar.com/avatar/08fc937ced22467c3b4ec2388c8f0022?s=69&d=identicon" alt="avatar">
-            .score 8
-            .badges
-            .rank 3
-          li
-            .name ShartMeister
-            .avatar <img src="http://1.gravatar.com/avatar/4e84843ebff0918d72ade21c6ee7b1e4?s=69&d=identicon" alt="avatar">
-            .score 5
-            .badges
-            .rank 4
-          li
-            .name TriggerFinger
-            .avatar <img src="http://2.gravatar.com/avatar/c5c64af9b7505777b53e05857616d39f?s=69&d=identicon" alt="avatar">
-            .score 1
-            .badges
-            .rank 5
-      div#leaderboard-you.leaderboard
-        a(id="start-you", href="/arena").big-yellow-button.small Play!
-        ul.leaderboard
-          li.you
-            .name yourname
-            .avatar <img src="http://0.gravatar.com/avatar/987da1e668e6eb5cde64b52a477764ec?s=69&d=identicon" alt="avatar">
-            .score 1
-            .badges
-            .rank 123
+          - each killer in killers
+            li
+              .name= killer.user.preferredUsername
+              .avatar img(src=killer.user.avatar, alt="avatar")
+              .score 12
+              .badges
+              .rank 1
+      - if (user != null)
+        div#leaderboard-you.leaderboard
+          a(id="start-you", href="/arena")
+            img(src="/css/img/play.png",alt="start game").img-button
+          ul.leaderboard
+            li.you
+              .name #{user}
+              - if (avatar != "undefined")
+                .avatar
+                  img(src: avatar, alt: "avatar")
+              .score #{score}
+              .badges
+              .rank #{rank}
         
   div.cols.xi
     .a

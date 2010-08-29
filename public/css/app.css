@@ -1,9 +1,18 @@
 /*Resets */
+html {
+	margin: 0;
+	padding: 0;
+}
 body {
 	font-family: arial;
 	margin: 0;
 	padding: 0;
 	background: url("img/home_bg.jpg") left -20px;
+}
+
+a{
+	color: #DD0204;
+	text-decoration: none;
 }
 
 p {
@@ -61,7 +70,8 @@ h2 {
 /*Home and Game*/
 
 #header h1 {
-	margin:  20px 0px 25px 0;
+	margin-top:  20px;
+	margin-left: 10px;
 }
 #vote-button img {
 	position: absolute;
@@ -81,6 +91,12 @@ h2 {
 	position: absolute;
 	right: 80px;
 	top: 0px;
+}
+
+#login img {
+	position:relative;
+	top: -10px;
+	left: -30px;
 }
 
 #live-action-container {
@@ -238,11 +254,16 @@ div.leaderboard.summary {
 
 #start-you {
 	position: absolute;
-	top: 30px;
+	top: 25px;
 	right: 90px;
 	z-index: 100;
 }
 
+#login img {
+	position:relative;
+	top: -10px;
+	left: -30px;
+}
 
 .kill-label {
 	position: absolute;
@@ -320,6 +341,10 @@ div.leaderboard.summary {
 	display: block;
 }
 
+.img-button{
+	border: 0;
+}
+
 .clear {
 	clear: both;
 }
@@ -331,7 +356,7 @@ div.leaderboard.summary {
 .panel {
 	background-color: rgba(0,0,0,.8);
 	border: 1px solid silver;
-	padding: 2px;
+	padding: 15px;
 	color: silver;
 }
 

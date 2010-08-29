@@ -472,13 +472,16 @@
 	    }
 	    
 	    ko.handle.position = function(id, x, y) {
-	    	for (i = 0; i < camera.players.length; i++) {
-	    		var p = camera.players[i];
-	    		if (p.id === id) {
-	    			p.moveTo(x, y);
-	    			return;
-	    		}
-	    	}
+        var players = camera.players
+          , len = players.length
+          , p
+        while (len--){
+          p = players[len];
+          if (p.id == id) {
+            p.moveTo(x, y);
+            return;
+          }
+        }
 	    };
 
 		

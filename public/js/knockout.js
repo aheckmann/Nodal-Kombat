@@ -7,6 +7,11 @@ var knockout = {
 		$("#login").click(function(){
 			$("#login-modal").modal();
 		})
+
+    $(".character-container").live("click", function(){
+      $("#character-selection-container").hide()
+      level.load('test_level', start) 
+    })
 		  	
 		//twitter updates		
 	}

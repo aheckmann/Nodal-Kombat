@@ -7,7 +7,6 @@ html
     script(src:"http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js")
     script(src:"/js/json.js")
     script(src:"/js/socketio/socket.io.js")
-    script(src:"/js/knockout.js")
     script(src:"/js/app.js")    
     script(src:"/js/simpleModal.js")
     :javascript
@@ -15,5 +14,5 @@ html
       |	document.write(unescape("%3Cscript src='" + rpxJsHost + "rpxnow.com/js/lib/rpx.js' type='text/javascript'%3E%3C/script%3E"));
       |	//RPXNOW.overlay = true;
       |	//RPXNOW.language_preference = 'en';
-  body
+  body#index
     #wrap!= body

@@ -1,3 +1,405 @@
+/*Resets */
 body {
-  color: green;
+	font-family: arial;
+	margin: 0;
+	padding: 0;
+	background: url("img/home_bg.jpg") left -20px;
 }
+
+p {
+	padding: 0;
+	margin: 0;
+}
+
+ul {
+	list-style-type: none;
+	padding: 0px;
+	margin: 0px;
+}
+
+h1{
+	margin: 0px;
+	color:white
+}
+
+h2 {
+	margin-top: 0px;
+	margin-bottom: 5px;
+	color:white
+}
+
+/*Layout*/
+#container {
+	margin: auto;
+	width: 1200px;
+	position: relative;
+	margin-bottom: 30px;
+}
+
+
+#footer {
+	height: 1em;
+	clear: both;
+	padding-top: 30px;
+}
+
+.top {
+	height: 515px;
+	margin-bottom: 40px;
+}
+
+.b.top div.leaderboard {
+	margin-left: 21px;
+	background-color: rgba(0,0,0,.8);
+	
+}
+
+/*Home and Game*/
+
+#header h1 {
+	margin:  20px 0px 25px 0;
+}
+#vote-button img {
+	position: absolute;
+	border: 0px;
+}
+
+.second {
+	margin-top: 70px;
+}
+#index #vote-button img, #game #vote-button img {
+	top: -11px;
+	left: 260px;
+}
+
+
+#player-box {
+	position: absolute;
+	left: 845px;
+	top: 0px;
+}
+
+#live-action-container {
+	height: 490px;
+	position: relative;
+	border: 1px solid silver;
+	margin-top: 40px;
+}
+
+#game-info {
+	text-align: center;
+	height: 1.2em;
+	background-color: blue;
+}
+
+.right-box {
+	margin-left: 15px;
+}
+
+
+#live-game-updates {
+	margin-top: 40px;
+}
+
+
+
+
+/* winner summary */
+.winner img {
+	width: 180px;
+	height: 230px;
+}
+
+#summary-container {
+	width: 700px;
+	padding: 20px;
+	text-align:center;
+}
+
+
+#summary-container .winner {
+	margin-left: 20px;
+}
+
+#summary-container #vote-button img{
+	position: static;
+}
+
+#summary-leaderboard {
+	margin: auto;
+	width: 300px;
+	padding: 15px;
+}
+
+#summary-container #play-again, #summary-container #quit{
+	
+}
+
+
+
+
+
+
+
+/*Leaderboards */
+div.leaderboard {
+	width: 340px;
+}
+
+div.leaderboard.summary {
+	width: 300px;
+}
+.leaderboard h2{
+	height: 30px;
+	padding: 10px 0 0 10px;
+	margin-bottom: 0px;
+	font-size: 18px;
+}
+
+.leaderboard li {
+	position: relative;
+	background-color: #3E0001;
+	box-shadow:0px -1px 10px black;
+	-moz-box-shadow:0px -1px 10px black;
+	box-shadow:0px -1px 10px black;
+	height: 70px;
+}
+
+.leaderboard .name {
+	color: #ce8b61;
+	font-size: 18px;
+	position: absolute;
+	top: 20px;
+	left: 85px;
+}
+
+.leaderboard .score {
+	color: gray;
+	font-size: 18px;
+	position: absolute;
+	top: 20px;
+	right: 60px;
+}
+
+.leaderboard .rank {
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius:10px;
+	border: 1px solid silver;
+	background-color: black;
+	color: silver;
+	position: absolute;
+	padding: 0px 6px;
+	left: 3px;
+}
+
+.leaderboard .avatar img{
+	border: 1px silver solid;
+	padding: 2px;
+	width: 50px;
+	height: 50px;
+	top: 10px;
+	left: 15px;
+	position: absolute;
+}
+
+.leaderboard li.you {
+	border: 5px solid orange;
+}
+
+
+.leaderboard li.you2 {
+	-moz-box-shadow : 0px 0px 10px orange;
+}
+
+#leaderboard-you {
+	margin-top: 10px;
+	position: relative;
+}
+
+#leaderboard-you .avatar img {
+	top: 7px;
+}
+
+#leaderboard-you .name, #leaderboard-you .score {
+	top: 23px;
+}
+
+.leaderboard .message {
+	margin-top: 20px;
+	text-align: center;
+	height: 50px;
+}
+
+
+#start-you {
+	position: absolute;
+	top: 30px;
+	right: 90px;
+	z-index: 100;
+}
+
+
+.kill-label {
+	position: absolute;
+	top: 0px;
+	right: 75px;
+}
+
+
+/* Modals */
+#character-selection-container {
+	width: 700px;
+	position: relative;
+	float: left;
+}
+
+#character-selection-container #vote-button img{
+	top: -10px;
+	right: 30px;
+}
+
+.character-container {
+	float: left;
+	height: 200px;
+	width: 150px;
+	text-align: center;
+	padding: 10px;
+	border: 2px solid white;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	cursor: pointer;
+	margin-top: 20px;
+}
+
+.character-container img {
+	height: 180px;
+	width:  100px;
+}
+
+.character-container span {
+	display: block;
+}
+
+.character-container.selected {
+	border: 2px solid black;
+}
+
+.character-container:hover {
+	border: 2px solid orange;
+}
+
+.character-container.selected:hover {
+	border: 2px solid black;
+}
+
+#choose-character-button {
+	margin: 10px 60px 0 0;
+	clear: both;
+	float: right;
+}
+
+
+
+
+
+
+
+
+/* helpers */
+.hidden {
+	display: none;
+}
+
+.button {
+	display: block;
+}
+
+.clear {
+	clear: both;
+}
+
+.right {
+	text-align: right;
+}
+
+.panel {
+	background-color: rgba(0,0,0,.8);
+	border: 1px solid silver;
+	padding: 2px;
+	color: silver;
+}
+
+
+
+
+
+
+/* SimpleModal */
+#simplemodal-container a.modalCloseImg {
+	background:url(img/x.png) no-repeat; /* adjust url as required */
+	width:25px;
+	height:29px;
+	display:inline;
+	z-index:3200;
+	position:absolute;
+	top:-15px;
+	right:-15px;
+	cursor:pointer;
+}
+
+#simplemodal-container {
+	border: 5px solid black;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	background-color: white;
+}
+
+#simplemodal-overlay {background-color:black;}
+
+#login-iframe {
+	width: 400px; 
+	height: 170px;
+	overflow: hidden;
+}
+
+#login-modal-text {
+	margin: 0px 43px 15px 43px;
+}
+
+/* NESTED COLUMNS */
+.col {
+	float: left;
+	width: 300px;
+}
+
+.cols {
+	height:1%;
+	clear:both;}
+.cols:after {
+	content: ".";
+	display:block;
+	height:0;
+	clear:both;
+	visibility:hidden;}
+.a { clear:left; }
+.a, .b, .c, .d {
+	width:24.7%;
+	float:left;
+	position:relative;}
+.cols .cols .a, .cols .cols .b, .cols .cols .c, .cols .cols .d { width:24.7%; }
+body .xxx .a, body .xxx .b, body .xxx .c, body .ix .a, body .xi .b, .cols .xxx .a, .cols .xxx .b, .cols .xxx .c, .cols .ix .a, .cols .xi .b { width:33%; }
+body .xx .a, body .xx .b, body .xii .a, body .ixi .b, body .iix .c, .cols .xx .a, .cols .xx .b, .cols .xii .a, .cols .ixi .b, .cols .iix .c { width:49.5%; }
+body .ix .b, body .xi .a, .cols .ix .b, .cols .xi .a { width:66%; }
+body .xxi .a, body .ixx .b, .cols .xxi .a, .cols .ixx .b { width:74.5%; }
+.cols {
+	margin-right:15px !important;
+	width:auto;}
+body .xxx, body .xii, body .xii, body .ixi, body .iix { margin-right:30px !important; }
+body .xxxx { margin-right:45px !important; }
+.b, .cols .cols .b { left:15px; }
+.c, .cols .cols .c { left:30px; }
+.d, .cols .cols .d { left:45px; }
+ul.cols { margin-left:0 !important; }

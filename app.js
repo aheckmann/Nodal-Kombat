@@ -25,6 +25,14 @@ var app = module.exports = express.createServer(
 app.configure(function(){
   app.set('views', __dirname + '/views')
 })
+.error(function(err, req, res, next){
+  if (err && 2 === err.errno){
+    res.render("404.jade", { layout: false }, function(err, content){
+      res.send(content || "aaaaaah!! I've been shot!", 404)  
+    })
+    console.dir(err)
+  }    
+})
 
 require("./lib/redis")
 require("./lib/oauth")

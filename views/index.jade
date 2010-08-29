@@ -66,8 +66,7 @@
   #footer
   
 div#login-modal.hidden
-  iframe(id="login-iframe", src="https://nodelicious.rpxnow.com/openid/v2/signin?token_url=http%3A%2F%2F"+HOST+"%2Flogin",  scrolling="no",  frameBorder="no",  allowtransparency="true")
-  p#login-modal-text
-    Or <a href="#">play anonymously</a> you dirty, no good coward.
+  iframe(id="login-iframe", src="https://nodelicious.rpxnow.com/openid/embed?token_url=http%3A%2F%2F"+HOST+"%2Flogin",  scrolling="no",  frameBorder="no",  allowtransparency="true")
+  p#login-modal-text Or <a href="#">play anonymously</a> you dirty, no good coward.
 	
 script(src:"/js/knockout.js")

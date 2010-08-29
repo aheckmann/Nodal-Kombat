@@ -53,6 +53,8 @@ function Sprite(url, col_w, row_h, w, h) {
 }
 
 
+// !Animations in development
+
 function Animation(sprite, runtime) {
 	this.sprite = sprite;
 	this.time = 0;
@@ -66,12 +68,21 @@ Animation.prototype.add_image = function(col, row) {
 	this.order.concat([row, col]);
 };
 
-Animation.prototype.draw = function(ctx, x, y, scale) {
+Animation.prototype.draw = function(ctx, x, y, scale, flip) {
 	var frame = ~~((this.time / this.runtime) * (this.order.length));
 	var col = this.order[frame].c;
 	var row = this.order[frame].r;
 	try {
-		ctx.drawImage(this.sprite.simg.img, this.sprite.col_w * col, this.sprite.row_h * row, this.sprite.w, this.sprite.h, x, y, this.sprite.w * scale, this.sprite.h * scale);
+		if (flip) {
+			ctx.drawImage(this.sprite.simg.img, this.sprite.col_w * col, this.sprite.row_h * row, this.sprite.w, this.sprite.h, x, y, this.sprite.w * scale, this.sprite.h * scale);		
+		}
+		else {
+			ctx.save();
+			ctx.scale(-1, 1);
+			ctx.drawImage(this.sprite.simg.img, this.sprite.col_w * col, this.sprite.row_h * row, this.sprite.w, this.sprite.h, -x, y, -this.sprite.w * scale, this.sprite.h * scale);
+			ctx.restore();
+			
+		}
 	}
 	catch (e) {
 		log("error: " + e.message);
@@ -123,8 +134,8 @@ Animation.prototype.draw = function(ctx, x, y, scale) {
     for (var i = 0; i < plat_data.polygon.length / 2; i++) {
       poly_sh.vertices[i].Set(plat_data.polygon[i*2], plat_data.polygon[i*2+1]);
     }
-    poly_sh.restitution = 0.2;
-    poly_sh.friction = 0.4;
+    poly_sh.restitution = 0;
+    poly_sh.friction = 2;
 
     var poly_bd = new b2BodyDef();				
     poly_bd.AddShape(poly_sh);
@@ -213,7 +224,7 @@ Animation.prototype.draw = function(ctx, x, y, scale) {
       );
     }
 		
-    drawWorld(physics.world, ctx, fx, fy, scale);
+    //drawWorld(physics.world, ctx, fx, fy, scale);
   }
 		
 		
@@ -221,7 +232,7 @@ Animation.prototype.draw = function(ctx, x, y, scale) {
     var world = new b2AABB();
     world.minVertex.Set(-2000, -2000);
     world.maxVertex.Set(2000, 2000);
-    var gravity = new b2Vec2(0, 250);
+    var gravity = new b2Vec2(0, 280);
     var doSleep = true;
     this.world = new b2World(world, gravity, doSleep);
   }
@@ -382,6 +393,7 @@ Animation.prototype.draw = function(ctx, x, y, scale) {
     this.r = 8;
     this.lastHitBy = null;
     this.air_jump = true;
+    this.flipped = false;
     this.body = this._build_body();
   } 
   Player.prototype.push = function() {
@@ -399,35 +411,56 @@ Animation.prototype.draw = function(ctx, x, y, scale) {
 Player.prototype.draw = function(ctx, ox, oy, scale) {
 	this.x = this.body.m_position.x;
 	this.y = this.body.m_position.y;
-	//ctx.fillStyle = "#f00";
-	//ctx.fillRect(ox + this.x * scale - 5, oy + this.y * scale - 5, 10, 10);
 	
-	animation['run'].enter_frame();
-	animation['run'].draw(ctx, ox + (this.x - 32) * scale, oy + (this.y - 115) * scale, scale);
+	if (this.flipped) {
+		animation['run'].enter_frame();
+		animation['run'].draw(ctx, ox + (this.x - 32) * scale, oy + (this.y - 115) * scale, scale, false);
+	}
+	else {
+		animation['run'].enter_frame();
+		animation['run'].draw(ctx, ox + (this.x - 32) * scale, oy + (this.y - 115) * scale, scale, true);
+	}
 };		
   Player.prototype._build_body = function() {
     var circle = new b2CircleDef();
-    circle.density = 0.25;
-    circle.restitution = -0.1;
+    circle.density = 0.1;
+    circle.restitution = 0;
     circle.radius = this.r;
-    circle.friction = 1.5;
+    circle.friction = 2;
     
     var rect = new b2PolyDef();
     rect.vertexCount = 4;
-    rect.vertices[0].Set(-this.r, 0);
-    rect.vertices[1].Set(-this.r, -128);
-    rect.vertices[2].Set(this.r, -128);
-    rect.vertices[3].Set(this.r, 0);
+    rect.vertices[0].Set(-this.r - 2, 0);
+    rect.vertices[1].Set(-this.r - 2, -100);
+    rect.vertices[2].Set(this.r + 2, -100);
+    rect.vertices[3].Set(this.r + 2, 0);
+    rect.density = 0.001;
+    rect.restitution = 0;
+    rect.friction = 0;
+ 	
+    var feet_bd = new b2BodyDef();
+    feet_bd.AddShape(circle);
+    feet_bd.position.Set(this.x, this.y);
+    feet_bd.angularDamping = 0.7;
+    feet_bd.linearDamping = 0.01;
+    feet_bd.allowSleep = false;
     
-    var body = new b2BodyDef();
-    body.AddShape(circle);
-    body.AddShape(rect);
-    body.position.Set(this.x, this.y);
-    body.angularDamping = 0.7;
-    body.linearDamping = 0.01;
-    body.allowSleep = false;
+    var body_bd = new b2BodyDef();
+    body_bd.AddShape(rect);
+    body_bd.position.Set(this.x, this.y);
+    body_bd.allowSleep = false;
+	body_bd.preventRotation = true;    
     
-    return physics.world.CreateBody(body);		
+    var feet_body = physics.world.CreateBody(feet_bd);
+    var body_body = physics.world.CreateBody(body_bd);
+    
+    var axle_def = new b2RevoluteJointDef();
+    axle_def.anchorPoint.Set(this.x, this.y);
+    axle_def.body2 = feet_body;
+    axle_def.body1 = body_body;
+    var axle = physics.world.CreateJoint(axle_def);
+    
+    return feet_body;
   };
   Player.prototype.handle_input = function() {
     if (keyboard.left.down && !keyboard.right.down) {
@@ -455,23 +488,19 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
 			}
 */
 //			this.body.ApplyForce(new b2Vec2(x * 15, 0), offset);
-    this.body.ApplyForce(new b2Vec2(x * 15000, 0), this.body.GetCenterPosition());
-    this.body.ApplyTorque(1500000 * x);
+    this.body.ApplyForce(new b2Vec2(x * 5000, 0), this.body.GetCenterPosition());
+    this.body.ApplyTorque(500000 * x);
+    this.flipped = (x > 0) ? false : true;
   };
   Player.prototype._jump = function() {
-    var contact = this.body.GetContactList();
-    while (contact) {
-      //console.dir(contact);
-      if (contact.contact.m_manifold[0].normal.y < 0) {
+    if (this.body.GetContactList()) {
         this.air_jump = true;
-        this.body.ApplyImpulse(new b2Vec2(0, -11000), this.body.GetCenterPosition());					
+        this.body.ApplyImpulse(new b2Vec2(0, -5000), this.body.GetCenterPosition());					
         return;
-      }
-      contact = contact.next;
     }
     if (this.air_jump) {
       this.air_jump = false;
-      this.body.ApplyImpulse(new b2Vec2(0, -11000), this.body.GetCenterPosition());					
+      this.body.ApplyImpulse(new b2Vec2(0, -4000), this.body.GetCenterPosition());					
       return;
     }			
   };
@@ -526,7 +555,7 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
 	];
 	   
      
-  var SINGLE_USER = true;
+  var SINGLE_USER = true;//false;
   
   //camera.target = player;
   
@@ -573,7 +602,7 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
   
   function log(msg) {
   	if (window.console) {
-  		window.console.log(msg);
+  		window.console.log.apply(window.console, arguments);
   	}
   }
 
@@ -581,7 +610,7 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
   		log("Starting game");  
   	if (SINGLE_USER) {
   		log("Starting game");
-		player = new Player("testme", 0, -250);		
+		player = new Player("testme", 0, -150);		
 		camera.players.push(player);			
 		ko._gameTimer = window.setInterval(main, 1000 / 77);
   		return;

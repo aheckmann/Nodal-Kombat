@@ -8,6 +8,12 @@
 	<canvas id="arena" width="800" height="480"></canvas>
 
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+	
+	<script type="text/javascript" src="js/socketio/socket.io.js"></script>
+	<script type="text/javascript" src="js/app.js"></script>
+	<script type="text/javascript" src="js/json.js"></script>
+
+	
 	<script type="text/javascript" src="js/box2djq.js"></script>
 	<script type="text/javascript" src="js/box2d_debug.js"></script>	
 	<script type="text/javascript">
@@ -161,7 +167,8 @@
 				var key = this[this.map[i]];
 				key.first = (key.down) ? false : true;
 			}
-		}
+		};
+		
 		
 		
 		function Camera(spring, margin_x, margin_y) {
@@ -237,25 +244,67 @@
 			this.id = id;
 			this.x = x;
 			this.y = y;
+			NPC.hash[id] = this;
 		}
 		NPC.prototype.draw = function(ctx, ox, oy, scale) {
 			ctx.fillStyle = "#f00";
 			ctx.fillRect(ox + this.x * scale - 5, oy + this.y * scale - 5, 10, 10);
 		};
+		NPC.prototype.moveTo = function(x, y) {
+			this.x = x;
+			this.y = y;
+		};
+
+		NPC.hash = [];
+		
+		
+		function Sprite(url, col_w, row_h, w, h) {
+			this.col_w = col_w;
+			this.row_h = row_h;
+			this.w = w;
+			this.h = h;
+			this.sheet = new SmartImage(url);
+		}
+		
+		
+		function Animation() {
+			this.frame = 0;
+			this.images = [];
+		}
+		Animation.prototype.enter_frame = function() {
+			this.frame = (this.frame + 1) % this.images.length;
+		};
+		Animation.prototype.add_image = function(url) {
+			this.images.push(new SmartImage(url));
+		};
+		Animation.prototype.draw(ctx, x, y, scale) {
+			
+		};
 		
 		
 		function Player(id, x, y) {
+			this.id = id;
 			this.x = x;
 			this.y = y;
 			this.r = 8;
 			this.air_jump = true;
 			this.body = this._build_body();
 		}
+		Player.prototype.push = function() {
+			ko.send({method: "position", args: [this.id, this.x, this.y] });
+		};
+		Player.prototype.moveTo = function(x, y) {
+			this.x = this.body.m_position.x = x;
+			this.y = this.body.m_position.y = y;
+		};
 		Player.prototype.draw = function(ctx, ox, oy, scale) {
 			this.x = this.body.m_position.x;
 			this.y = this.body.m_position.y;
-			ctx.fillStyle = "#f00";
-			ctx.fillRect(ox + this.x * scale - 5, oy + this.y * scale - 5, 10, 10);
+			//ctx.fillStyle = "#f00";
+			//ctx.fillRect(ox + this.x * scale - 5, oy + this.y * scale - 5, 10, 10);
+			
+			this.animations[0].enter_frame();
+			this.animations[0].draw(ctx, ox + x, oy + y, scale);
 		};		
 		Player.prototype._build_body = function() {
 			var circle = new b2CircleDef();
@@ -354,19 +403,53 @@
 		var physics = new Physics();
 		var keyboard = new Keyboard();
 		var camera = new Camera(.04, 100, 100);
-		
-		var player = new Player("me", 0, -250);		
-		camera.players.push(player);
-		
-		var npc = new NPC("notme", 20, -200);
-		camera.players.push(npc);
-		
+		var player;
+				
 		//camera.target = player;
 		
 		function start() {
-			window.setInterval(main, 1000 / 77);
-			//main();
+			ko.handle.start = function() {
+				console.log("Server says we can START the game!");
+				ko._gameTimer = window.setInterval(main, 1000 / 77);
+			}
+			ko.join();
 		}
+		
+		ko.handle.receiveid = function(id) {	
+			player = new Player(id, 0, -250);		
+			camera.players.push(player);			
+		}
+
+		ko.handle.playerjoin = function() {
+			console.log("Player joined with ids: %s", Array.prototype.slice.call(arguments, 0).join(","));
+			for (var i = 0; i < arguments.length; i++) {
+				var id = arguments[i];
+				if (id === player.id) {
+					player.moveTo(i * 50, -250);
+				}
+				else if (!NPC.hash[id]) {
+					var new_npc = new NPC(id, i * 50, -250);
+					camera.players.push(new_npc);
+				}
+			}
+		};
+		
+	    ko.handle.status = function(status){
+	      console.log("status: "+status)
+	      if ("gameover" === status)
+	        clearInterval(ko._gameTimer)
+	    }
+	    
+	    ko.handle.position = function(id, x, y) {
+	    	for (i = 0; i < camera.players.length; i++) {
+	    		var p = camera.players[i];
+	    		if (p.id === id) {
+	    			p.moveTo(x, y);
+	    			return;
+	    		}
+	    	}
+	    };
+
 		
 		function main() {
 			game.frame += 1;		
@@ -375,6 +458,7 @@
 			physics.step();
 			camera.update();
 			view.render(camera);
+			player.push();
 			keyboard.monitor();			
 		}
 		

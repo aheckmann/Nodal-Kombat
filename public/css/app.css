@@ -89,14 +89,15 @@ h2 {
 
 #player-box {
 	position: absolute;
-	right: 80px;
+	left: 862px;
 	top: 0px;
+	width: 300px;
 }
 
-#login img {
+#player-box #login {
 	position:relative;
-	top: -10px;
-	left: -30px;
+	top: 0px;
+	left: 120px;
 }
 
 #live-action-container {
@@ -390,13 +391,39 @@ div.leaderboard.summary {
 
 #login-iframe {
 	width: 400px; 
-	height: 170px;
+	height: 215px;
 	overflow: hidden;
 }
 
 #login-modal-text {
 	margin: 0px 43px 15px 43px;
 }
+
+#logged-in-box {
+	padding: 0px 0px 10px 15px;
+	position: relative;
+}
+
+#logged-in-box img {
+	border: 1px solid black;
+	padding: 2px;
+}
+
+#logged-in-box .name {
+	position: absolute;
+	top: 5px;
+	left: 80px;
+	text-shadow: 1px 1px 3px red;
+}
+
+#logged-in-box #logout {
+	font-size: 11px;
+	position: absolute;
+	top: 30px;
+	left: 80px;
+}
+
+
 
 /*twitter */
 .twtr-hd {

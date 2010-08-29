@@ -56,23 +56,44 @@ function Sprite(url, col_w, row_h, w, h) {
 
 // !Animations in development
 
-function Animation(sprite, runtime) {
-	this.sprite = sprite;
+function AnimState(anim_name) {
+	this.animation = animation[anim_name];
+	this.reset();
+}
+AnimState.prototype.reset = function() {
 	this.time = 0;
+	this.complete = false;
+};
+AnimState.prototype.enter_frame = function() {
+	this.time += game.slice;
+	if (this.animation.loop !== 0 && this.time > this.animation.runtime * this.animation.loop) {
+		this.complete = true;
+	}
+};
+AnimState.prototype.draw = function(ctx, x, y, scale, flip) {
+	var frame = (this.animation.runtime > 0) ? ~~(((this.time % this.animation.runtime) / this.animation.runtime) * (this.animation.order.length)) : 0;
+	this.animation.draw(frame, ctx, x, y, scale, flip);
+}
+
+
+function Animation(sprite, runtime, loop) {
+	this.sprite = sprite;
 	this.order = [];
+	this.loop = loop;
 	this.runtime = runtime;
 }
-Animation.prototype.enter_frame = function() {
-	this.time = (this.time + game.slice) % this.runtime;
-};
 Animation.prototype.add_image = function(col, row) {
 	this.order.concat([row, col]);
 };
 
-Animation.prototype.draw = function(ctx, x, y, scale, flip) {
-	var frame = ~~((this.time / this.runtime) * (this.order.length));
-	var col = this.order[frame].c;
-	var row = this.order[frame].r;
+Animation.prototype.draw = function(frame, ctx, x, y, scale, flip) {
+	try {
+		var col = this.order[frame].c;
+		var row = this.order[frame].r;
+	}
+	catch (e) {
+		log("bad frame = " + frame);
+	}
 	try {
 		if (flip) {
 			ctx.drawImage(this.sprite.simg.img, this.sprite.col_w * col, this.sprite.row_h * row, this.sprite.w, this.sprite.h, x, y, this.sprite.w * scale, this.sprite.h * scale);		
@@ -245,7 +266,7 @@ Animation.prototype.draw = function(ctx, x, y, scale, flip) {
   function Keyboard() {
     var that = this;
     
-    this.map = {'38':'up', '39':'right', '40':'down', '37':'left', '32':'space'};
+    this.map = {'38':'up', '39':'right', '40':'down', '37':'left', '32':'space', '68':'d', '83':'s'};
     
     for (var i in this.map) {
       this[this.map[i]] = {down: false, first: false};
@@ -256,6 +277,9 @@ Animation.prototype.draw = function(ctx, x, y, scale, flip) {
         var key = that[that.map[event.which]];				
         key.down = true;
         return false;
+      }
+      else {
+      	log(event.which);
       }
       return true;
     });
@@ -363,31 +387,6 @@ Animation.prototype.draw = function(ctx, x, y, scale, flip) {
 
   NPC.hash = [];
   
-  /*
-  function Sprite(url, col_w, row_h, w, h) {
-    this.col_w = col_w;
-    this.row_h = row_h;
-    this.w = w;
-    this.h = h;
-    this.sheet = new SmartImage(url);
-  }
-  
-  
-  function Animation(sprite) {
-    this.sprite = sprite;
-    this.
-  }
-  Animation.prototype.enter_frame = function() {
-    this.frame = (this.frame + 1) % this.images.length;
-  };
-  Animation.prototype.add_image = function(url) {
-    this.images.push(new SmartImage(url));
-  };
-  Animation.prototype.draw(ctx, x, y, scale) {
-    
-  };
-  */
-  
   function Player(id, x, y) {
     this.id = id;
     this.x = x;
@@ -397,6 +396,9 @@ Animation.prototype.draw = function(ctx, x, y, scale, flip) {
     this.air_jump = true;
     this.flipped = false;
     this.body = this._build_body();
+    this.current_action = [this._stand];
+    this.wants_to = [];
+    this.anim_state = new AnimState('stand');;
   } 
   Player.prototype.push = function() {
     var data = {method: "position", args: [this.id, this.x, this.y] }
@@ -415,15 +417,17 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
 	this.y = this.body.m_position.y;
 	
 	if (this.flipped) {
-		animation['run'].enter_frame();
-		animation['run'].draw(ctx, ox + (this.x - 32) * scale, oy + (this.y - 115) * scale, scale, false);
+		this.anim_state.enter_frame();
+		this.anim_state.draw(ctx, ox + (this.x - 32) * scale, oy + (this.y - 115) * scale, scale, false);
 	}
 	else {
-		animation['run'].enter_frame();
-		animation['run'].draw(ctx, ox + (this.x - 32) * scale, oy + (this.y - 115) * scale, scale, true);
+		this.anim_state.enter_frame();
+		this.anim_state.draw(ctx, ox + (this.x - 32) * scale, oy + (this.y - 115) * scale, scale, true);
 	}
 };		
   Player.prototype._build_body = function() {
+  	var body_margin = 10;
+  
     var circle = new b2CircleDef();
     circle.density = 0.1;
     circle.restitution = 0;
@@ -432,11 +436,11 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
     
     var rect = new b2PolyDef();
     rect.vertexCount = 4;
-    rect.vertices[0].Set(-this.r - 2, 0);
-    rect.vertices[1].Set(-this.r - 2, -100);
-    rect.vertices[2].Set(this.r + 2, -100);
-    rect.vertices[3].Set(this.r + 2, 0);
-    rect.density = 0.001;
+    rect.vertices[0].Set(-this.r - body_margin, 0);
+    rect.vertices[1].Set(-this.r - body_margin, -100);
+    rect.vertices[2].Set(this.r + body_margin, -100);
+    rect.vertices[3].Set(this.r + body_margin, 0);
+    rect.density = 0.0001;
     rect.restitution = 0;
     rect.friction = 0;
  	
@@ -466,38 +470,71 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
   };
   Player.prototype.handle_input = function() {
     if (keyboard.left.down && !keyboard.right.down) {
-      this._run(-1);
+    	this.wants_to.push([this._run, -1]);
+      //this._run(-1);
     }
     else if (keyboard.right.down && !keyboard.left.down) {
-      this._run(1);
+      //this._run(1);
+      	this.wants_to.push([this._run, 1]);
     }
     if (keyboard.space.down && keyboard.space.first) {
-      this._jump();
+      //this._jump();
+      this.wants_to.push([this._jump]);
     }
+    if (keyboard.d.down && keyboard.d.first) {
+    	this.wants_to.push([this._stab]);
+    }
+    if (keyboard.s.down && keyboard.s.first) {
+    	this.wants_to.push([this._kick]);
+    }
+    
     if (this.body.GetContactList()) {
       this.air_jump = true;
     }
   };
+  Player.prototype.execute_actions = function() {
+  	if (this.wants_to.length > 0) {
+	  	this.wants_to.sort(function(a, b) {
+	  		return (b[0].priority - a[0].priority);
+	  	});
+	  	var action = this.wants_to.shift();
+	  	if (action[0].priority > this.current_action[0].priority) {
+	  		this.current_action = action;
+		  	this.anim_state = new AnimState(action[0].animation);
+	  	}
+	  	this.current_action[0].apply(this, this.current_action.slice(1));
+	 }
+  	else if (this.anim_state.complete) {
+//  		console.log("Just standing again");
+  		this.current_action = [this._stand];
+  		this.anim_state = new AnimState(this._stand.animation);
+  	}
+  	this.wants_to = [];
+	 
+  }
   
 // !Player movement
 
+
+	Player.prototype._stand = function() {
+	
+	};
+	Player.prototype._stand.priority = 10;
+	Player.prototype._stand.animation = 'stand';
+	
 	Player.prototype._run = function(x) {
     var offset = b2Math.AddVV(this.body.GetCenterPosition(), new b2Vec2(0, -this.r * 15));
-/*			for (var k in this.body) {
-				if (typeof(this.body[k]) === 'function') {
-					log(k);
-				}
-			}
-*/
-//			this.body.ApplyForce(new b2Vec2(x * 15, 0), offset);
     this.body.ApplyForce(new b2Vec2(x * 5000, 0), this.body.GetCenterPosition());
-    this.body.ApplyTorque(500000 * x);
+    this.body.ApplyTorque(600000 * x);
     this.flipped = (x > 0) ? false : true;
   };
+  Player.prototype._run.priority = 20;
+  Player.prototype._run.animation = 'run';
+  
   Player.prototype._jump = function() {
     if (this.body.GetContactList()) {
         this.air_jump = true;
-        this.body.ApplyImpulse(new b2Vec2(0, -5000), this.body.GetCenterPosition());					
+        this.body.ApplyImpulse(new b2Vec2(0, -6000), this.body.GetCenterPosition());					
         return;
     }
     if (this.air_jump) {
@@ -506,7 +543,18 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
       return;
     }			
   };
+  Player.prototype._jump.priority = 30;
+  Player.prototype._jump.animation = 'jump';
   
+  Player.prototype._stab = function() {
+  	
+  };
+  Player.prototype._stab.priority = 25;
+  Player.prototype._stab.animation = 'stab';
+  
+  Player.prototype._kick = function() {};
+  Player.prototype._kick.priority = 27;
+  Player.prototype._kick.animation = 'kick';
   
   function Game() {
     this.target_fps = 77;	// 80 seems to be the max Chrome can handle
@@ -545,16 +593,42 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
   var view = new View('arena');
   var physics = new Physics();
   var keyboard = new Keyboard();
-  var camera = new Camera(.1, 100, 200, 200);
+  var camera = new Camera(.1, 100, 200, 100);
   var player;
+  
+  // !Animation definitions
+  
 	var animation = {};
-	animation['run'] = new Animation(new Sprite('/characters/aaron.png', 64, 128, 64, 128), 1000);
-	animation['run'].order = [
-		{c: 0, r:0},
-		{c:1, r:0},
-		{c:2, r:0},
-		{c:3, r:0}
+	var sprite = {};
+	sprite['aaron'] = new Sprite('/characters/aaron2.png', 80, 128, 80, 128);
+
+	animation['stand'] = new Animation(sprite['aaron'], 0, 0);
+	animation['stand'].order = [
+		{c: 0, r: 0}
 	];
+
+	animation['run'] = new Animation(sprite['aaron'], 50, 1);
+	animation['run'].order = [
+		{c: 0, r: 0}
+	];
+
+	animation['stab'] = new Animation(sprite['aaron'], 300, 1);
+	animation['stab'].order = [
+		{c: 1, r: 0},
+		{c: 2, r: 0},
+		{c: 3, r: 0}
+	];
+	animation['kick'] = new Animation(sprite['aaron'], 300, 1);
+	animation['kick'].order = [
+		{c: 4, r: 0},
+		{c: 5, r: 0}
+	];
+	animation['jump'] = new Animation(sprite['aaron'], 50, 1);
+	animation['jump'].order = [
+		{c: 0, r: 0}
+	];
+	
+
 	   
      
   var SINGLE_USER = true;//false;
@@ -628,7 +702,8 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
     game.frame += 1;		
     game.update_slice();		
 
-    player.handle_input();		
+    player.handle_input();
+    player.execute_actions();		
     physics.step();
 
     camera.update();
@@ -639,7 +714,7 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
     keyboard.monitor();			
   }
   
-  level.load('test_level', start);	// Start the game after loading!
+  //level.load('test_level', start);	// Start the game after loading!
 
 
 

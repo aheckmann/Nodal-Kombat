@@ -291,7 +291,17 @@ width:206px;
 }
 
 
-/* Modals */
+/* character select */
+
+#waiting {
+	position: absolute;
+	top: 0px;
+	left: 40%;
+	color: white;
+	font-size: 24px;
+	display: none;
+}
+
 #character-selection-container {
 	width: 860px;
 	position: absolute;

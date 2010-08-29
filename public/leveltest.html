@@ -8,8 +8,12 @@
 	<canvas id="arena" width="800" height="480"></canvas>
 
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-	
 	<script type="text/javascript" src="js/socketio/socket.io.js"></script>
+  <script>console.error = function(err){
+    if (/call recursively/.test(err)) 
+      console.log("Flash is sad. TODO, tell the server to slow down") 
+
+  }</script>
 	<script type="text/javascript" src="js/app.js"></script>
 	<script type="text/javascript" src="js/json.js"></script>
 

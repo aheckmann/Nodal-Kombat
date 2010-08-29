@@ -4,11 +4,13 @@
       img(src="/css/img/logo.png", alt="Node Knockout")
     #player-box
       - if (user != null)
-        - if (avatar != "undefined")
-          img(src: avatar)
-        span.username #{user} 
+        #logged-in-box
+          - if (avatar != "undefined")
+            img(src: avatar)
+          .name Logged in as #{user}
+          a(id="logout", href="/logout") Logout when you're dead, sissy 
       - else
-        a(id="login", href="#").big-yellow-button Sign In
+        a(id="login", href="#").big-yellow-button.button Sign In
     a(id="vote-button", href='http://nodeknockout.com/teams/nodelicious', title='Help me win Node.js KO!', target="nko")
       img(src="http://nodeknockout.com/images/voteko.png", alt="Help me win Node.js KO!")
 

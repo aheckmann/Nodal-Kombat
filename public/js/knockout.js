@@ -8,11 +8,7 @@ var knockout = {
 			$("#login-modal").modal();
 		})
 		  	
-		//twitter updates
-		
-		
-		
-		
+		//twitter updates		
 	}
 }
 

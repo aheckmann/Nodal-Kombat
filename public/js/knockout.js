@@ -10,13 +10,18 @@ var knockout = {
 
 	    $(".character-container").live("click", function(){
 	      $("#character-selection-container").hide()
+	      var waitingMessage = $("#waiting")
+	      
+	      
+	      $(document).bind("gamestart",function(){
+	        console.log("adfasdfadfasdfads")
+	      	waitingMessage.fadeOut();
+	      });
+	      
 	      level.load('test_level', start); 
 	      
-	      var waitingMessage = $("#waiting")
 	      waitingMessage.fadeIn()
-	      $(document).bind("gamestart",function(){
-	      	waitingMessage.fadeIn();
-	      });
+	      
 	     
 	    })
 		  	

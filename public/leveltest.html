@@ -85,7 +85,7 @@
         , canvWidth = this.canvas.width
         , canvHeight = this.canvas.height
         , view_aspect = canvWidth / canvHeight
-        , level = level
+        , lev = level
         , h_added
         , w_added
         , view_box = 
@@ -109,9 +109,9 @@
 			
 			var scale = canvWidth / view_box.width;
 		
-      var bg = level.background.img
-        , px = (((view_box.x + view_box.width * .5) + level.w) / (level.w * 2))
-        , py = (((view_box.y + view_box.height * .5) + level.h) / (level.h * 2))
+      var bg = lev.background.img
+        , px = (((view_box.x + view_box.width * .5) + lev.w) / (lev.w * 2))
+        , py = (((view_box.y + view_box.height * .5) + lev.h) / (lev.h * 2))
         , fx = -view_box.x * scale
         , fy = -view_box.y * scale
         ;
@@ -133,7 +133,7 @@
 				players[len].draw(ctx, fx, fy, scale);
 			
 			// Draw platforms
-      var platforms = level.platforms
+      var platforms = lev.platforms
         , len = platforms.length
         , plat
         , img

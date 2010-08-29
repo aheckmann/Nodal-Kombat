@@ -27,11 +27,16 @@
         log("gametimer"); 
         log(arguments) 
       }
-    , status: function(){log("status: gameover");log(arguments) }
+    , status: function(status){
+        log("status: %s" + status);
+        $(document).trigger("gameover")
+      }
     , die: function(killer, victim){
+        log(ko.playersRemaining)
         log("%s killed %s", killer, victim) 
-        if (1 === --ko.playersRemaining)
-          ko.handle.status("gameover")
+        if (1 === --ko.playersRemaining){
+          ko.send({method:"gameover"})
+        }
       }
     , chatspeed: function(speed){ log("set the game speed to %s", speed) }
     }

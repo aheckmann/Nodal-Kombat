@@ -254,7 +254,7 @@ div.leaderboard.summary {
 
 #start-you {
 	position: absolute;
-	top: 25px;
+	top: 28px;
 	right: 90px;
 	z-index: 100;
 }
@@ -402,6 +402,32 @@ div.leaderboard.summary {
 .twtr-hd {
 	display: none;
 }
+
+/*buttons */
+.big-yellow-button {
+	font-style: italic;
+	font-size: 1.3em;
+	color: black;
+	background-color: #FFDD00;
+	padding: 5px 10px;
+	text-decoration: none;
+	text-shadow: 1px 1px 0px white;
+	
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-moz-box-shadow: 
+		1px 2px 5px black,
+		inset 0px 0px 10px red;
+	-webkit-box-shadow: 
+		0px 0px 5px black,
+		inset 0px 0px 10px red;
+}
+
+.big-yellow-button.small {
+	font-size: 1em;
+	padding: 2px 5px;
+}
+
 
 /* NESTED COLUMNS */
 .col {

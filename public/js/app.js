@@ -421,6 +421,7 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
     
     var body = new b2BodyDef();
     body.AddShape(circle);
+    body.AddShape(rect);
     body.position.Set(this.x, this.y);
     body.angularDamping = 0.7;
     body.linearDamping = 0.01;

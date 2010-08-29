@@ -257,7 +257,7 @@
 
 		NPC.hash = [];
 		
-		
+		/*
 		function Sprite(url, col_w, row_h, w, h) {
 			this.col_w = col_w;
 			this.row_h = row_h;
@@ -267,9 +267,9 @@
 		}
 		
 		
-		function Animation() {
-			this.frame = 0;
-			this.images = [];
+		function Animation(sprite) {
+			this.sprite = sprite;
+			this.
 		}
 		Animation.prototype.enter_frame = function() {
 			this.frame = (this.frame + 1) % this.images.length;
@@ -280,7 +280,7 @@
 		Animation.prototype.draw(ctx, x, y, scale) {
 			
 		};
-		
+		*/
 		
 		function Player(id, x, y) {
 			this.id = id;
@@ -300,11 +300,11 @@
 		Player.prototype.draw = function(ctx, ox, oy, scale) {
 			this.x = this.body.m_position.x;
 			this.y = this.body.m_position.y;
-			//ctx.fillStyle = "#f00";
-			//ctx.fillRect(ox + this.x * scale - 5, oy + this.y * scale - 5, 10, 10);
+			ctx.fillStyle = "#f00";
+			ctx.fillRect(ox + this.x * scale - 5, oy + this.y * scale - 5, 10, 10);
 			
-			this.animations[0].enter_frame();
-			this.animations[0].draw(ctx, ox + x, oy + y, scale);
+			//this.animations[0].enter_frame();
+			//this.animations[0].draw(ctx, ox + x, oy + y, scale);
 		};		
 		Player.prototype._build_body = function() {
 			var circle = new b2CircleDef();

@@ -267,6 +267,13 @@ div.leaderboard.summary {
 	z-index: 100;
 }
 
+#start-play-now {
+left:320px;
+position:absolute;
+top:0px;
+width:206px;
+}
+
 #login img {
 	position:relative;
 	top: -10px;
@@ -414,6 +421,11 @@ div.leaderboard.summary {
 	top: -10px;
 }
 
+#logged-out-box {
+	position: relative;
+	width: 90px;
+}
+
 #logged-in-box img {
 	border: 1px solid black;
 	padding: 2px;
@@ -460,11 +472,27 @@ div.leaderboard.summary {
 		inset 0px 0px 10px red;
 }
 
+
 .big-yellow-button.small {
 	font-size: 1em;
 	padding: 2px 5px;
 }
 
+.big-yellow-button.big {
+	font-size: 2em;
+	padding: 10px 10px;
+}
+
+
+.big-yellow-button:hover {
+	-moz-box-shadow: 
+		1px 2px 5px black,
+		inset 0px 0px 10px gray;
+	-webkit-box-shadow: 
+		0px 0px 5px black,
+		inset 0px 0px 10px gray;
+	
+}
 
 /* NESTED COLUMNS */
 .col {

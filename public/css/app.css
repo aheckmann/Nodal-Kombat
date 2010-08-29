@@ -198,7 +198,6 @@ div.leaderboard.summary {
 	color: #ce8b61;
 	font-size: 18px;
 	position: absolute;
-	top: 20px;
 	left: 85px;
 }
 
@@ -251,7 +250,7 @@ div.leaderboard.summary {
 }
 
 #leaderboard-you .name, #leaderboard-you .score {
-	top: 23px;
+	top: 10px;
 }
 
 .leaderboard .message {
@@ -263,8 +262,8 @@ div.leaderboard.summary {
 
 #start-you {
 	position: absolute;
-	top: 28px;
-	right: 90px;
+	top: 40px;
+	left: 90px;
 	z-index: 100;
 }
 

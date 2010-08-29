@@ -341,7 +341,7 @@
   } 
   Player.prototype.push = function() {
     var data = {method: "position", args: [this.id, this.x, this.y] }
-    if (!this.DEAD && this.y < level.deathline){
+    if (!this.DEAD && this.y > level.deathline){
       this.DEAD = true
       data = [data, {method: "die", args:[this.lastHitBy || this.id]}];
     }

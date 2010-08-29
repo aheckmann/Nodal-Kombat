@@ -6,7 +6,7 @@
 	"vertical":640,
 	"start_x":0,
 	"start_y":-200,
-  "deathline": -20,
+  "deathline": 30,
 	"platforms": [
 		{
 			"image":"platform_main.png",

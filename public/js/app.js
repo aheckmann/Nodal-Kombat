@@ -95,17 +95,20 @@ Animation.prototype.draw = function(frame, ctx, x, y, scale, flip) {
 		log("bad frame = " + frame);
 	}
 	try {
+		ctx.save();
 		if (flip) {
-			ctx.drawImage(this.sprite.simg.img, this.sprite.col_w * col, this.sprite.row_h * row, this.sprite.w, this.sprite.h, x, y, this.sprite.w * scale, this.sprite.h * scale);		
+			ctx.translate(x, y);
+			ctx.scale(scale, scale);
+			ctx.drawImage(this.sprite.simg.img, this.sprite.col_w * col, this.sprite.row_h * row, this.sprite.w, this.sprite.h, 0, 0, this.sprite.w, this.sprite.h);		
 		}
 		else {
-			ctx.save();
-			ctx.translate(x + this.sprite.w, y)			
+			
+			ctx.translate(x + this.sprite.w * scale, y);			
 			ctx.scale(-scale, scale);
 			ctx.drawImage(this.sprite.simg.img, this.sprite.col_w * col, this.sprite.row_h * row, this.sprite.w, this.sprite.h, 0, 0, this.sprite.w, this.sprite.h);
-			ctx.restore();
 			
 		}
+		ctx.restore();		
 	}
 	catch (e) {
 		log("error: " + e.message);
@@ -374,11 +377,21 @@ Animation.prototype.draw = function(frame, ctx, x, y, scale, flip) {
     this.id = id;
     this.x = x;
     this.y = y;
+    this.flipped = false;
+    this.image = {anim_name: 'stand', frame: 0};
     NPC.hash[id] = this;
   }
   NPC.prototype.draw = function(ctx, ox, oy, scale) {
     ctx.fillStyle = "#f00";
     ctx.fillRect(ox + this.x * scale - 5, oy + this.y * scale - 5, 10, 10);
+    
+	if (this.flipped) {
+		animation[this.image.anim_name].draw(this.image.frame, ctx, ox + (this.x - 40) * scale, oy + (this.y - 115) * scale, scale, false);
+	}
+	else {
+		animation[this.image.anim_name].draw(this.image.frame, ctx, ox + (this.x - 40) * scale, oy + (this.y - 115) * scale, scale, true);
+	}
+    
   };
   NPC.prototype.moveTo = function(x, y) {
     this.x = x;
@@ -418,11 +431,11 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
 	
 	if (this.flipped) {
 		this.anim_state.enter_frame();
-		this.anim_state.draw(ctx, ox + (this.x - 32) * scale, oy + (this.y - 115) * scale, scale, false);
+		this.anim_state.draw(ctx, ox + (this.x - 40) * scale, oy + (this.y - 115) * scale, scale, false);
 	}
 	else {
 		this.anim_state.enter_frame();
-		this.anim_state.draw(ctx, ox + (this.x - 32) * scale, oy + (this.y - 115) * scale, scale, true);
+		this.anim_state.draw(ctx, ox + (this.x - 40) * scale, oy + (this.y - 115) * scale, scale, true);
 	}
 };		
   Player.prototype._build_body = function() {

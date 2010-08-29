@@ -10,6 +10,13 @@ var knockout = {
 		  	
 		//twitter updates		
 	}
+	
+	
+	updateLeaders: function(data) {
+		
+	
+	}
+	
 }
 
 knockout.init();

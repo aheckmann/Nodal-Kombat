@@ -515,6 +515,7 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
   
 // !Player movement
 
+
 	Player.prototype._stand = function() {
 	
 	};
@@ -524,7 +525,7 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
 	Player.prototype._run = function(x) {
     var offset = b2Math.AddVV(this.body.GetCenterPosition(), new b2Vec2(0, -this.r * 15));
     this.body.ApplyForce(new b2Vec2(x * 5000, 0), this.body.GetCenterPosition());
-    this.body.ApplyTorque(500000 * x);
+    this.body.ApplyTorque(600000 * x);
     this.flipped = (x > 0) ? false : true;
   };
   Player.prototype._run.priority = 20;
@@ -533,7 +534,7 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
   Player.prototype._jump = function() {
     if (this.body.GetContactList()) {
         this.air_jump = true;
-        this.body.ApplyImpulse(new b2Vec2(0, -5000), this.body.GetCenterPosition());					
+        this.body.ApplyImpulse(new b2Vec2(0, -6000), this.body.GetCenterPosition());					
         return;
     }
     if (this.air_jump) {
@@ -713,7 +714,7 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
     keyboard.monitor();			
   }
   
-  level.load('test_level', start);	// Start the game after loading!
+  //level.load('test_level', start);	// Start the game after loading!
 
 
 

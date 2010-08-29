@@ -198,7 +198,6 @@ div.leaderboard.summary {
 	color: #ce8b61;
 	font-size: 18px;
 	position: absolute;
-	top: 20px;
 	left: 85px;
 }
 
@@ -251,7 +250,7 @@ div.leaderboard.summary {
 }
 
 #leaderboard-you .name, #leaderboard-you .score {
-	top: 23px;
+	top: 10px;
 }
 
 .leaderboard .message {
@@ -263,9 +262,16 @@ div.leaderboard.summary {
 
 #start-you {
 	position: absolute;
-	top: 28px;
-	right: 90px;
+	top: 40px;
+	left: 90px;
 	z-index: 100;
+}
+
+#start-play-now {
+left:320px;
+position:absolute;
+top:0px;
+width:206px;
 }
 
 #login img {
@@ -283,9 +289,11 @@ div.leaderboard.summary {
 
 /* Modals */
 #character-selection-container {
-	width: 700px;
-	position: relative;
-	float: left;
+	width: 860px;
+	position: absolute;
+  left: 0px;
+  top: 74px;
+  background: black;
 }
 
 #character-selection-container #vote-button img{
@@ -296,7 +304,7 @@ div.leaderboard.summary {
 .character-container {
 	float: left;
 	height: 200px;
-	width: 150px;
+	width: 135px;
 	text-align: center;
 	padding: 10px;
 	border: 2px solid white;
@@ -413,6 +421,11 @@ div.leaderboard.summary {
 	top: -10px;
 }
 
+#logged-out-box {
+	position: relative;
+	width: 90px;
+}
+
 #logged-in-box img {
 	border: 1px solid black;
 	padding: 2px;
@@ -459,11 +472,27 @@ div.leaderboard.summary {
 		inset 0px 0px 10px red;
 }
 
+
 .big-yellow-button.small {
 	font-size: 1em;
 	padding: 2px 5px;
 }
 
+.big-yellow-button.big {
+	font-size: 2em;
+	padding: 10px 10px;
+}
+
+
+.big-yellow-button:hover {
+	-moz-box-shadow: 
+		1px 2px 5px black,
+		inset 0px 0px 10px gray;
+	-webkit-box-shadow: 
+		0px 0px 5px black,
+		inset 0px 0px 10px gray;
+	
+}
 
 /* NESTED COLUMNS */
 .col {

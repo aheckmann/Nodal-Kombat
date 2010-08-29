@@ -171,17 +171,20 @@ Animation.prototype.draw = function(frame, ctx, x, y, scale, flip) {
 		log("bad frame = " + frame);
 	}
 	try {
+		ctx.save();
 		if (flip) {
-			ctx.drawImage(this.sprite.simg.img, this.sprite.col_w * col, this.sprite.row_h * row, this.sprite.w, this.sprite.h, x, y, this.sprite.w * scale, this.sprite.h * scale);		
+			ctx.translate(x, y);
+			ctx.scale(scale, scale);
+			ctx.drawImage(this.sprite.simg.img, this.sprite.col_w * col, this.sprite.row_h * row, this.sprite.w, this.sprite.h, 0, 0, this.sprite.w, this.sprite.h);		
 		}
 		else {
-			ctx.save();
-			ctx.translate(x + this.sprite.w, y)			
+			
+			ctx.translate(x + this.sprite.w * scale, y);			
 			ctx.scale(-scale, scale);
 			ctx.drawImage(this.sprite.simg.img, this.sprite.col_w * col, this.sprite.row_h * row, this.sprite.w, this.sprite.h, 0, 0, this.sprite.w, this.sprite.h);
-			ctx.restore();
 			
 		}
+		ctx.restore();		
 	}
 	catch (e) {
 		log("error: " + e.message);
@@ -452,11 +455,25 @@ Animation.prototype.draw = function(frame, ctx, x, y, scale, flip) {
     this.x = x;
     this.y = y;
     this.userkey = userkey;
+    this.flipped = "false";
+    this.anim_state = new AnimState('stand');
     NPC.hash[id] = this;
   }
   NPC.prototype.draw = function(ctx, ox, oy, scale) {
-    ctx.fillStyle = "#f00";
-    ctx.fillRect(ox + this.x * scale - 5, oy + this.y * scale - 5, 10, 10);
+	if (this.flipped === "true") {	
+	    ctx.fillStyle = "#f00";
+		this.anim_state.enter_frame();
+		this.anim_state.draw(ctx, ox + (this.x - 40) * scale, oy + (this.y - 115) * scale, scale, false);
+	}
+	else {
+	    //log("NOT FLIPPED!");	
+	    ctx.fillStyle = "#00f";
+		this.anim_state.enter_frame();
+		this.anim_state.draw(ctx, ox + (this.x - 40) * scale, oy + (this.y - 115) * scale, scale, true);
+	}
+	
+	    ctx.fillRect(ox + this.x * scale - 5, oy + this.y * scale - 5, 10, 10);
+    
   };
   NPC.prototype.moveTo = function(x, y) {
     this.x = x;
@@ -469,8 +486,8 @@ Animation.prototype.draw = function(frame, ctx, x, y, scale, flip) {
     log("new player " + id + " : " + userkey)
     this.id = id;
     this.userkey = userkey;
-    this.x = x;
-    this.y = y;
+    this.x = this.last_x = x;
+    this.y = this.last_x = y;
     this.r = 8;
     this.lastHitBy = null;
     this.air_jump = true;
@@ -478,9 +495,16 @@ Animation.prototype.draw = function(frame, ctx, x, y, scale, flip) {
     this.body = this._build_body();
     this.current_action = [this._stand];
     this.wants_to = [];
-    this.anim_state = new AnimState('stand');;
+    this.anim_state = new AnimState('stand');
   } 
   Player.prototype.push = function() {
+  	if (Math.abs(this.x - this.last_x) > 1 || Math.abs(this.y - this.last_y) > 1) {
+	  	this.last_x = this.x;
+	 	this.last_y = this.y;  
+  	}
+  	else {
+  		return;
+  	}
     var data = {method: "position", args: [this.id, this.x, this.y] }
     if (!this.DEAD && this.y > level.deathline){
       this.DEAD = true
@@ -502,11 +526,11 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
 	
 	if (this.flipped) {
 		this.anim_state.enter_frame();
-		this.anim_state.draw(ctx, ox + (this.x - 32) * scale, oy + (this.y - 115) * scale, scale, false);
+		this.anim_state.draw(ctx, ox + (this.x - 40) * scale, oy + (this.y - 115) * scale, scale, false);
 	}
 	else {
 		this.anim_state.enter_frame();
-		this.anim_state.draw(ctx, ox + (this.x - 32) * scale, oy + (this.y - 115) * scale, scale, true);
+		this.anim_state.draw(ctx, ox + (this.x - 40) * scale, oy + (this.y - 115) * scale, scale, true);
 	}
 };		
   Player.prototype._build_body = function() {
@@ -555,11 +579,13 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
   Player.prototype.handle_input = function() {
     if (keyboard.left.down && !keyboard.right.down) {
     	this.wants_to.push([this._run, -1]);
+    	this.flipped = true;
       //this._run(-1);
     }
     else if (keyboard.right.down && !keyboard.left.down) {
       //this._run(1);
       	this.wants_to.push([this._run, 1]);
+      	this.flipped = false;
     }
     if (keyboard.space.down && keyboard.space.first) {
       //this._jump();
@@ -576,6 +602,12 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
       this.air_jump = true;
     }
   };
+  Player.prototype.start_action = function(action) {
+	this.current_action = action;
+  	this.anim_state = new AnimState(action[0].animation);
+  	//log("This.flipped: " + this.flipped);
+  	window.ko.send({method: 'playanim', args: [this.id, action[0].animation, this.flipped]});
+  };
   Player.prototype.execute_actions = function() {
   	if (this.wants_to.length > 0) {
 	  	this.wants_to.sort(function(a, b) {
@@ -583,18 +615,15 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
 	  	});
 	  	var action = this.wants_to.shift();
 	  	if (action[0].priority > this.current_action[0].priority) {
-	  		this.current_action = action;
-		  	this.anim_state = new AnimState(action[0].animation);
+	  		this.start_action(action);
 	  	}
-	  	this.current_action[0].apply(this, this.current_action.slice(1));
 	 }
   	else if (this.anim_state.complete) {
 //  		console.log("Just standing again");
-  		this.current_action = [this._stand];
-  		this.anim_state = new AnimState(this._stand.animation);
+		this.start_action([this._stand]);
   	}
-  	this.wants_to = [];
-	 
+  	this.current_action[0].apply(this, this.current_action.slice(1));  	
+  	this.wants_to = [];	 
   }
   
 // !Player movement
@@ -610,7 +639,6 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
     var offset = b2Math.AddVV(this.body.GetCenterPosition(), new b2Vec2(0, -this.r * 15));
     this.body.ApplyForce(new b2Vec2(x * 5000, 0), this.body.GetCenterPosition());
     this.body.ApplyTorque(600000 * x);
-    this.flipped = (x > 0) ? false : true;
   };
   Player.prototype._run.priority = 20;
   Player.prototype._run.animation = 'run';
@@ -691,8 +719,12 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
 		{c: 0, r: 0}
 	];
 
-	animation['run'] = new Animation(sprite['aaron'], 50, 1);
+	animation['run'] = new Animation(sprite['aaron'], 300, 1);
 	animation['run'].order = [
+		{c: 0, r: 0},
+		{c: 6, r: 0},
+		{c: 7, r: 0},
+		{c: 8, r: 0},
 		{c: 0, r: 0}
 	];
 
@@ -719,7 +751,56 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
   
   //camera.target = player;
   
-    
+
+  ko.handle.receiveid = function(id) {
+  	if (SINGLE_USER) {
+	  	return;	
+  	} 
+    player = window.player = new Player(id, 0, -250);		
+    camera.players.push(player);			
+  }
+
+  ko.handle.playerjoin = function() {
+    log("Player joined with ids: %s", Array.prototype.slice.call(arguments, 0).join(","));
+    for (var i = 0; i < arguments.length; i++) {
+      var id = arguments[i];
+      if (id === player.id) {
+        player.moveTo(i * 50, -250);
+      }
+      else if (!NPC.hash[id]) {
+        var new_npc = new NPC(id, i * 50, -250);
+        camera.players.push(new_npc);
+      }
+    }
+  };
+  
+  ko.handle.status = function(status){
+    log("status: "+status)
+    if ("gameover" === status)
+      clearInterval(ko._gameTimer)
+  }
+  
+  ko.handle.position = function(id, x, y) {
+    var players = camera.players
+      , len = players.length
+      , p
+    while (len--){
+      p = players[len];
+      if (p.id == id) {
+        p.moveTo(x, y);
+        return;
+      }
+    }
+  };
+  
+  ko.handle.playanim = function(id, name, flipped) {
+  	if (NPC.hash[id]) {
+  		//log("Received flipped: " + flipped);
+  		NPC.hash[id].flipped = flipped;
+	  	NPC.hash[id].anim_state = new AnimState(name);
+	 }
+  };
+  
   function log(msg) {
   	if (window.console) {
   		window.console.log.apply(window.console, arguments);

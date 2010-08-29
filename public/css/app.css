@@ -368,6 +368,11 @@ div.leaderboard.summary {
 	margin: 0px 43px 15px 43px;
 }
 
+/*twitter */
+.twtr-hd {
+	display: none;
+}
+
 /* NESTED COLUMNS */
 .col {
 	float: left;

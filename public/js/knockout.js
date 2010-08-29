@@ -11,7 +11,13 @@ var knockout = {
 	    $(".character-container").live("click", function(){
 	      $("#character-selection-container").hide()
 	      level.load('test_level', start); 
-	      $("#waiting").fadeIn();
+	      
+	      var waitingMessage = $("#waiting")
+	      waitingMessage.fadeIn()
+	      $(document).bind("gamestart",function(){
+	      	waitingMessage.fadeIn();
+	      });
+	     
 	    })
 		  	
 		//twitter updates		

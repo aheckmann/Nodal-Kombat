@@ -253,6 +253,11 @@ div.leaderboard.summary {
 	top: 10px;
 }
 
+.leaderboard .name, .leaderboard .score {
+	top: 25px;
+}
+
+
 .leaderboard .message {
 	margin-top: 20px;
 	text-align: center;

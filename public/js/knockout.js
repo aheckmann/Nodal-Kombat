@@ -1,5 +1,28 @@
 $.modal.defaults.overlayClose = true;
 
+var sampleData = [
+		{
+			name: "Bilbo",
+			avatar: "http://0.gravatar.com/avatar/987da1e668e6eb5cde64b52a477764ec?s=69&d=identicon",
+			score: 10,
+			rank: 1
+		},
+		
+		{
+			name: "Frodo",
+			avatar: "http://0.gravatar.com/avatar/987da1e668e6eb5cde64b52a477764ec?s=69&d=identicon",
+			score: 8,
+			rank: 2
+		},
+		
+		{
+			name: "Mr. Eyball",
+			avatar: "http://0.gravatar.com/avatar/987da1e668e6eb5cde64b52a477764ec?s=69&d=identicon",
+			score: 5,
+			rank: 3
+		},
+	];
+
 var knockout = {
 	
 	init: function() {
@@ -44,6 +67,7 @@ var knockout = {
 	}
 	
 }
+
 
 knockout.init();
 

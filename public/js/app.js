@@ -3,14 +3,31 @@
 
   window.ko = {
     handle: 
-    { jump: function(){ log("ko.jump"); log(arguments) }
-    , punch: function(){ log("ko.punch"); log(arguments) }
-    , start: function(){ log("ko.start"); log(arguments) }
-    , playerquit: function(){ log("playerquit"); log(arguments) }
-    , countdown: function(){ log("countdown"); log(arguments) }
-    , gametimer: function(){ log("gametimer"); log(arguments) }
+    { jump: function(){ log("ko.jump");
+       // log(arguments)
+        }
+    , punch: function(){ 
+        log("ko.punch"); 
+        //log(arguments) 
+        }
+    , start: function(){ 
+        log("ko.start"); 
+        //log(arguments)
+        }
+    , playerquit: function(){ 
+        log("playerquit"); 
+        //log(arguments) 
+      }
+    , countdown: function(){ 
+        log("countdown"); 
+        //log(arguments)
+    }
+    , gametimer: function(){ 
+        log("gametimer"); 
+        log(arguments) 
+      }
     , status: function(){log("status: gameover");log(arguments) }
-    , kill: function(killer, victim){ log("%s killed %s", killer, victim) }
+    , die: function(killer, victim){log("%s killed %s", killer, victim) }
     , chatspeed: function(speed){ log("set the game speed to %s", speed) }
     }
   , send: function(events){
@@ -387,8 +404,9 @@ Animation.prototype.draw = function(frame, ctx, x, y, scale, flip) {
 
   NPC.hash = [];
   
-  function Player(id, x, y) {
+  function Player(id, x, y, userkey) {
     this.id = id;
+    this.userkey = userkey;
     this.x = x;
     this.y = y;
     this.r = 8;
@@ -404,7 +422,7 @@ Animation.prototype.draw = function(frame, ctx, x, y, scale, flip) {
     var data = {method: "position", args: [this.id, this.x, this.y] }
     if (!this.DEAD && this.y > level.deathline){
       this.DEAD = true
-      data = [data, {method: "die", args:[this.lastHitBy || this.id]}];
+      data = [data, {method: "die", args:[this.lastHitBy || this.id, this.lastHitByUserKey]}];
     }
     ko.send(data);
   };
@@ -635,11 +653,11 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
   
   //camera.target = player;
   
-  ko.handle.receiveid = function(id) {
+  ko.handle.receiveid = function(id, userkey) {
   	if (SINGLE_USER) {
 	  	return;	
   	} 
-    player = window.player = new Player(id, 0, -250);		
+    player = window.player = new Player(id, 0, -250, userkey);		
     camera.players.push(player);			
   }
 

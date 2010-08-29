@@ -19,8 +19,7 @@ var knockout = {
 	
 	updateLeaders: function(data) {
 		var leaderBoard = $("ul.leaderboard");
-		leaderBoard.empty();
-		
+		leaderBoard.empty();		
 		$(data).each(function(e) {
 			leaderBoard.append('<li> \
 				<div class="name">' + this.name +'</div> \

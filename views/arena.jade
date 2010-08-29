@@ -20,24 +20,22 @@
     div.col.a.top
       #live-action-container
         #waiting Waiting for bad company...
+        #instruction space=jump, D=punch, S=kick
         canvas(id: "arena", width:800, height:480)
         #character-selection-container
           h1 Choose a Character
           .character-container#char-1
-            img(src:"http://blog.triggerla.com/wp-content/uploads/2008/08/drg-7.jpg")
+            img(src:"/css/img/aaron_mug.jpg")
             span Gunther
           .character-container#char-2
-            img(src:"http://blog.triggerla.com/wp-content/uploads/2008/08/drg-7.jpg")
+            img(src:"/css/img/jim.jpg")
             span Dieter
           .character-container#char-3
-            img(src:"http://blog.triggerla.com/wp-content/uploads/2008/08/drg-7.jpg")
+            img(src:"/css/img/assaf.jpg")
             span Schmidt
           .character-container#char-4
-            img(src:"http://blog.triggerla.com/wp-content/uploads/2008/08/drg-7.jpg")
+            img(src:"/css/img/hunter.jpg")
             span Hans
-          .character-container#char-5
-            img(src:"http://blog.triggerla.com/wp-content/uploads/2008/08/drg-7.jpg")
-            span Fuck Face
           a#choose-character-button(href:"#")Start Game
     div.col.b.top
       .leaderboard

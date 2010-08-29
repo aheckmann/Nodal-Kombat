@@ -38,6 +38,10 @@
           ko.send({method:"gameover"})
         }
       }
+    , givedamage: function(npcid, userkey){
+        if (npcid == player.id)
+          this.receiveBlow(npcid, userkey)
+      }
     , chatspeed: function(speed){ log("set the game speed to %s", speed) }
     }
   , send: function(events){
@@ -147,8 +151,13 @@ AnimState.prototype.enter_frame = function() {
 	}
 };
 AnimState.prototype.draw = function(ctx, x, y, scale, flip) {
+  // here check
+  // camera.players
+  // each player has an y and x
+  //
 	var frame = (this.animation.runtime > 0) ? ~~(((this.time % this.animation.runtime) / this.animation.runtime) * (this.animation.order.length)) : 0;
 	this.animation.draw(frame, ctx, x, y, scale, flip);
+  return !!this.animation.order[frame].damage
 }
 
 
@@ -512,9 +521,9 @@ Animation.prototype.draw = function(frame, ctx, x, y, scale, flip) {
     }
     ko.send(data);
   };
-  Player.prototype.receiveBlow = function(NPC){
-    this.lastHitBy = NPC.id
-    this.lastHitByUserKey = NPC.userkey
+  Player.prototype.receiveBlow = function(npcid, userkey){
+    this.lastHitBy = npcid
+    this.lastHitByUserKey =userkey
   }
   Player.prototype.moveTo = function(x, y) {
     this.x = this.body.m_position.x = x;
@@ -524,14 +533,15 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
 	this.x = this.body.m_position.x;
 	this.y = this.body.m_position.y;
 	
-	if (this.flipped) {
-		this.anim_state.enter_frame();
-		this.anim_state.draw(ctx, ox + (this.x - 40) * scale, oy + (this.y - 115) * scale, scale, false);
-	}
-	else {
-		this.anim_state.enter_frame();
-		this.anim_state.draw(ctx, ox + (this.x - 40) * scale, oy + (this.y - 115) * scale, scale, true);
-	}
+  this.anim_state.enter_frame();
+  var damage = this.anim_state.draw(ctx, ox + (this.x - 40) * scale, oy + (this.y - 115) * scale, scale, this.flipped)
+  if (damage){
+    for(var npc in NPC.hash) {
+      if (Math.abs(npc.x - this.x) < 40 && Math.abs(npc.y - this.y) < 128){
+        ko.send({method: "givedamage", args:[npc.id, npc.userkey]})
+      }
+    }
+  }
 };		
   Player.prototype._build_body = function() {
   	var body_margin = 10;
@@ -732,12 +742,12 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
 	animation['stab'].order = [
 		{c: 1, r: 0},
 		{c: 2, r: 0},
-		{c: 3, r: 0}
+		{c: 3, r: 0, damage: true}
 	];
 	animation['kick'] = new Animation(sprite['aaron'], 300, 1);
 	animation['kick'].order = [
 		{c: 4, r: 0},
-		{c: 5, r: 0}
+		{c: 5, r: 0, damage: true}
 	];
 	animation['jump'] = new Animation(sprite['aaron'], 50, 1);
 	animation['jump'].order = [

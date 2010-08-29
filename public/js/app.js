@@ -78,10 +78,9 @@ Animation.prototype.draw = function(ctx, x, y, scale, flip) {
 			ctx.drawImage(this.sprite.simg.img, this.sprite.col_w * col, this.sprite.row_h * row, this.sprite.w, this.sprite.h, x, y, this.sprite.w * scale, this.sprite.h * scale);		
 		}
 		else {
-			ctx.save();
 			ctx.scale(-1, 1);
 			ctx.drawImage(this.sprite.simg.img, this.sprite.col_w * col, this.sprite.row_h * row, this.sprite.w, this.sprite.h, -x, y, -this.sprite.w * scale, this.sprite.h * scale);
-			ctx.restore();
+			ctx.scale(1, 1);
 			
 		}
 	}

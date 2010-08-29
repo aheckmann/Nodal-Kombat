@@ -247,7 +247,7 @@ Animation.prototype.draw = function(frame, ctx, x, y, scale, flip) {
       );
     }
 		
-    //drawWorld(physics.world, ctx, fx, fy, scale);
+    drawWorld(physics.world, ctx, fx, fy, scale);
   }
 		
 		

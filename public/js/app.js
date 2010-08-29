@@ -9,6 +9,7 @@
     , playerquit: function(){ console.log("playerquit"); console.log(arguments) }
     , countdown: function(){ console.log("countdown"); console.log(arguments) }
     , status: function(){console.log("status: gameover");console.log(arguments) }
+    , kill: function(killer, victim){ console.log("%s killed %s", killer, victim); }
     }
   , send: function(event){
       if (!(event && event.method)) return 

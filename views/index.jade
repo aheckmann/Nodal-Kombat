@@ -8,8 +8,7 @@
           img(src: avatar)
         span.username #{user} 
       - else
-        a(id="login", href="#")
-          img(src="/css/img/signin.png", alt="sign in").img-button 
+        a(id="login", href="#").big-yellow-button Sign In
     a(id="vote-button", href='http://nodeknockout.com/teams/nodelicious', title='Help me win Node.js KO!', target="nko")
       img(src="http://nodeknockout.com/images/voteko.png", alt="Help me win Node.js KO!")
 
@@ -53,8 +52,7 @@
             .badges
             .rank 5
       div#leaderboard-you.leaderboard
-        a(id="start-you", href="#")
-          img(src="/css/img/play.png",alt="start game").img-button
+        a(id="start-you", href="/arena").big-yellow-button.small Play!
         ul.leaderboard
           li.you
             .name yourname

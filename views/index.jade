@@ -28,13 +28,20 @@
         h2 Leaderboard 
         h2.kill-label Kills
         ul.leaderboard
+          - var counter = 0
           - each killer in killers
+            - counter++
+            - var lbkiller = JSON.parse(killer)
+            - var userkey = lbkiller.user.providerName + "|" + lbkiller.user.preferredUsername + "|" + lbkiller.user.email		
             li
-              .name= killer.user.preferredUsername
-              .avatar img(src=killer.user.avatar, alt="avatar")
-              .score 12
+              .name= lbkiller.user.preferredUsername
+              .avatar
+                - if (lbkiller.user.photo != "undefined")
+                  .avatar
+                    img(src: lbkiller.user.photo, alt: "avatar")
+              .score= kcounts[userkey]
               .badges
-              .rank 1
+              .rank= counter
       - if (user != null)
         div#leaderboard-you.leaderboard
           a(id="start-you", href="/arena").big-yellow-button.button.small Play Now!

@@ -268,10 +268,14 @@ div.leaderboard.summary {
 }
 
 #start-play-now {
-left:320px;
+left:40%;
 position:absolute;
-top:0px;
+top:45%;
 width:206px;
+}
+
+#play-overlay {
+	width: 800px; left:25px;height: 100%; position: absolute; background-color: rgba(0,0, 0, 0.5);
 }
 
 #login img {

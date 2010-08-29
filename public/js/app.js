@@ -25,7 +25,7 @@
     //console.dir(message)
     
     // don't use JSON.parsing, too slow
-    // "jump#40,400,60|e:punch|e:gameover"
+    // "jump#40,400,60|punch|gameover"
 
     var msg = message.split("|")
       , ko = window.ko

@@ -18,6 +18,24 @@
     div.col.a.top
       #live-action-container
         canvas(id: "arena", width:800, height:480)
+        #character-selection-container
+          h1 Choose a Character
+          .character-container#char-1
+            img(src:"http://blog.triggerla.com/wp-content/uploads/2008/08/drg-7.jpg")
+            span Gunther
+          .character-container#char-2
+            img(src:"http://blog.triggerla.com/wp-content/uploads/2008/08/drg-7.jpg")
+            span Dieter
+          .character-container#char-3
+            img(src:"http://blog.triggerla.com/wp-content/uploads/2008/08/drg-7.jpg")
+            span Schmidt
+          .character-container#char-4
+            img(src:"http://blog.triggerla.com/wp-content/uploads/2008/08/drg-7.jpg")
+            span Hans
+          .character-container#char-5
+            img(src:"http://blog.triggerla.com/wp-content/uploads/2008/08/drg-7.jpg")
+            span Fuck Face
+          a#choose-character-button(href:"#")Start Game
     div.col.b.top
       .leaderboard
         h2 Leaderboard 
@@ -31,11 +49,6 @@
               .badges
               .rank 1
   div.cols.xi
-    .a
-      div#twitter-feed.panel
-        h2 Nodelicious Updates
-        script(src:"http://widgets.twimg.com/j/2/widget.js")
-        script(src:"/js/twitterFeed.js")  
   #footer
   
 div#login-modal.hidden

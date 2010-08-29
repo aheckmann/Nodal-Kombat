@@ -282,9 +282,11 @@ div.leaderboard.summary {
 
 /* Modals */
 #character-selection-container {
-	width: 700px;
-	position: relative;
-	float: left;
+	width: 860px;
+	position: absolute;
+  left: 0px;
+  top: 74px;
+  background: black;
 }
 
 #character-selection-container #vote-button img{
@@ -295,7 +297,7 @@ div.leaderboard.summary {
 .character-container {
 	float: left;
 	height: 200px;
-	width: 150px;
+	width: 135px;
 	text-align: center;
 	padding: 10px;
 	border: 2px solid white;

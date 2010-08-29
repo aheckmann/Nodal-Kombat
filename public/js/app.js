@@ -640,7 +640,7 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
     keyboard.monitor();			
   }
   
-  level.load('test_level', start);	// Start the game after loading!
+  //level.load('test_level', start);	// Start the game after loading!
 
 
 

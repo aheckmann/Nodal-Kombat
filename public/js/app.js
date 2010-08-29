@@ -3,14 +3,14 @@
 
   window.ko = {
     handle: 
-    { jump: function(){ console.log("ko.jump"); console.log(arguments) }
-    , punch: function(){ console.log("ko.punch"); console.log(arguments) }
-    , start: function(){ console.log("ko.start"); console.log(arguments) }
-    , playerquit: function(){ console.log("playerquit"); console.log(arguments) }
-    , countdown: function(){ console.log("countdown"); console.log(arguments) }
-    , status: function(){console.log("status: gameover");console.log(arguments) }
-    , kill: function(killer, victim){ console.log("%s killed %s", killer, victim) }
-    , chatspeed: function(speed){ console.log("set the game speed to %s", speed) }
+    { jump: function(){ log("ko.jump"); log(arguments) }
+    , punch: function(){ log("ko.punch"); log(arguments) }
+    , start: function(){ log("ko.start"); log(arguments) }
+    , playerquit: function(){ log("playerquit"); log(arguments) }
+    , countdown: function(){ log("countdown"); log(arguments) }
+    , status: function(){log("status: gameover");log(arguments) }
+    , kill: function(killer, victim){ log("%s killed %s", killer, victim) }
+    , chatspeed: function(speed){ log("set the game speed to %s", speed) }
     }
   , send: function(event){
       if (!(event && event.method)) return 
@@ -40,12 +40,53 @@
   })
 
 
+
+function Sprite(url, col_w, row_h, w, h) {
+	this.col_w = col_w;
+	this.row_h = row_h;
+	this.w = w;
+	this.h = h;
+	this.simg = new SmartImage(url);
+}
+
+
+function Animation(sprite, runtime) {
+	this.sprite = sprite;
+	this.time = 0;
+	this.order = [];
+	this.runtime = runtime;
+}
+Animation.prototype.enter_frame = function() {
+	this.time = (this.time + game.slice) % this.runtime;
+};
+Animation.prototype.add_image = function(col, row) {
+	this.order.concat([row, col]);
+};
+
+Animation.prototype.draw = function(ctx, x, y, scale) {
+	var frame = ~~((this.time / this.runtime) * (this.order.length));
+	var col = this.order[frame].c;
+	var row = this.order[frame].r;
+	try {
+		ctx.drawImage(this.sprite.simg.img, this.sprite.col_w * col, this.sprite.row_h * row, this.sprite.w, this.sprite.h, x, y, this.sprite.w * scale, this.sprite.h * scale);
+	}
+	catch (e) {
+		log("error: " + e.message);
+		log("draw(" + ctx + ", " + x + ", " + y + ", " + scale);
+		log("Row = " + row + ", col = " + col);
+	}
+};
+
+
+
+
+
   function SmartImage(src, callback) {
     var that = this;
     this.img = new Image();
     this.src = src;
     this.img.onload = function () {
-      //////console.log("Loaded " + src);
+      log("Loaded " + src);
       callback && callback(that.img);
       SmartImage.queue.splice(SmartImage.queue.indexOf(that), 1);
       if (!SmartImage.queue.length) {
@@ -53,13 +94,13 @@
       }
     };
     this.img.onerror = function () {
-      ////console.log("Error: Couldn't load image " + src);
+      log("Error: Couldn't load image " + src);
     }
 	  SmartImage.queue.push(this);
 	}
   
   SmartImage.load_all = function(callback) {
-    ////console.log("Loading all...");
+    ////log("Loading all...");
     SmartImage.callback = callback;
     for (var i = 0; i < SmartImage.queue.length; i++) {
       SmartImage.queue[i].img.src = SmartImage.queue[i].src;
@@ -96,6 +137,9 @@
     this.ox = this.canvas.width * .5;
     this.oy = this.canvas.height * .5;
   } 
+  
+  // !Rendering the scene
+  
   View.prototype.render = function(camera) {
     var camWidth = camera.width
       , camHeight = camera.height
@@ -166,14 +210,14 @@
       );
     }
 		
-    drawWorld(physics.world, ctx, fx, fy, scale);
+    //drawWorld(physics.world, ctx, fx, fy, scale);
   }
 		
 		
   function Physics() {
     var world = new b2AABB();
-    world.minVertex.Set(-500, -500);
-    world.maxVertex.Set(500, 500);
+    world.minVertex.Set(-2000, -2000);
+    world.maxVertex.Set(2000, 2000);
     var gravity = new b2Vec2(0, 250);
     var doSleep = true;
     this.world = new b2World(world, gravity, doSleep);
@@ -215,13 +259,14 @@
   };
 		
 		
-  function Camera(spring, margin_x, margin_y) {
+  function Camera(spring, margin_x, margin_top, margin_bottom) {
     this.x = -200;
     this.y = -500;
     this.width = 400;
     this.height = 240;
     this.margin_x = margin_x;
-    this.margin_y = margin_y;
+    this.margin_top = margin_top;
+    this.margin_bottom = margin_bottom;
     this.spring = spring;
     this.target = {
       left: -400,			
@@ -240,8 +285,8 @@
         //console.dir(p.body);
         this.target.left = Math.min((p.x - this.margin_x), this.target.left);
         this.target.right = Math.max((p.x + this.margin_x), this.target.right);
-        this.target.top = Math.min((p.y - this.margin_y), this.target.top);
-        this.target.bottom = Math.max((p.y + this.margin_y), this.target.bottom);
+        this.target.top = Math.min((p.y - this.margin_top), this.target.top);
+        this.target.bottom = Math.max((p.y + this.margin_bottom), this.target.bottom);
       }
     }
     var right = this.x + this.width,
@@ -265,7 +310,7 @@
   }
   Level.prototype.load = function(name, callback) {
     var that = this,
-      url = "levels/" + name + "/";
+      url = "/levels/" + name + "/";
     
     $.getJSON(url + "data.json", function(data) {
       that.background = new SmartImage(url + data.background);
@@ -341,15 +386,15 @@
     this.x = this.body.m_position.x = x;
     this.y = this.body.m_position.y = y;
   };
-  Player.prototype.draw = function(ctx, ox, oy, scale) {
-    this.x = this.body.m_position.x;
-    this.y = this.body.m_position.y;
-    ctx.fillStyle = "#f00";
-    ctx.fillRect(ox + this.x * scale - 5, oy + this.y * scale - 5, 10, 10);
-    
-    //this.animations[0].enter_frame();
-    //this.animations[0].draw(ctx, ox + x, oy + y, scale);
-  };		
+Player.prototype.draw = function(ctx, ox, oy, scale) {
+	this.x = this.body.m_position.x;
+	this.y = this.body.m_position.y;
+	//ctx.fillStyle = "#f00";
+	//ctx.fillRect(ox + this.x * scale - 5, oy + this.y * scale - 5, 10, 10);
+	
+	animation['run'].enter_frame();
+	animation['run'].draw(ctx, ox + (this.x - 32) * scale, oy + (this.y - 115) * scale, scale);
+};		
   Player.prototype._build_body = function() {
     var circle = new b2CircleDef();
     circle.density = 0.25;
@@ -380,19 +425,20 @@
       this.air_jump = true;
     }
   };
-
+  
+// !Player movement
 
 	Player.prototype._run = function(x) {
     var offset = b2Math.AddVV(this.body.GetCenterPosition(), new b2Vec2(0, -this.r * 15));
 /*			for (var k in this.body) {
 				if (typeof(this.body[k]) === 'function') {
-					console.log(k);
+					log(k);
 				}
 			}
 */
 //			this.body.ApplyForce(new b2Vec2(x * 15, 0), offset);
-    this.body.ApplyForce(new b2Vec2(x * 10000, 0), this.body.GetCenterPosition());
-    this.body.ApplyTorque(1000000 * x);
+    this.body.ApplyForce(new b2Vec2(x * 15000, 0), this.body.GetCenterPosition());
+    this.body.ApplyTorque(1500000 * x);
   };
   Player.prototype._jump = function() {
     var contact = this.body.GetContactList();
@@ -441,33 +487,41 @@
   Game.prototype.start = function() {	
     this.tick = Game.get_tick();
   }
-
+  
+  
+  
   
   var game = new Game();
   var level = new Level();
   var view = new View('arena');
   var physics = new Physics();
   var keyboard = new Keyboard();
-  var camera = new Camera(.04, 100, 100);
+  var camera = new Camera(.1, 100, 200, 200);
   var player;
-      
+	var animation = {};
+	animation['run'] = new Animation(new Sprite('/characters/aaron.png', 64, 128, 64, 128), 1000);
+	animation['run'].order = [
+		{c: 0, r:0},
+		{c:1, r:0},
+		{c:2, r:0},
+		{c:3, r:0}
+	];
+	   
+     
+  var SINGLE_USER = true;
+  
   //camera.target = player;
   
-  function start() {
-    ko.handle.start = function() {
-      console.log("Server says we can START the game!");
-      ko._gameTimer = window.setInterval(main, 1000 / 77);
-    }
-    ko.join();
-  }
-  
-  ko.handle.receiveid = function(id) {	
+  ko.handle.receiveid = function(id) {
+  	if (SINGLE_USER) {
+	  	return;	
+  	} 
     player = new Player(id, 0, -250);		
     camera.players.push(player);			
   }
 
   ko.handle.playerjoin = function() {
-    console.log("Player joined with ids: %s", Array.prototype.slice.call(arguments, 0).join(","));
+    log("Player joined with ids: %s", Array.prototype.slice.call(arguments, 0).join(","));
     for (var i = 0; i < arguments.length; i++) {
       var id = arguments[i];
       if (id === player.id) {
@@ -481,7 +535,7 @@
   };
   
   ko.handle.status = function(status){
-    console.log("status: "+status)
+    log("status: "+status)
     if ("gameover" === status)
       clearInterval(ko._gameTimer)
   }
@@ -498,16 +552,41 @@
       }
     }
   };
+  
+  function log(msg) {
+  	if (window.console) {
+  		window.console.log(msg);
+  	}
+  }
 
+  function start() {
+  		log("Starting game");  
+  	if (SINGLE_USER) {
+  		log("Starting game");
+		player = new Player("testme", 0, -250);		
+		camera.players.push(player);			
+		ko._gameTimer = window.setInterval(main, 1000 / 77);
+  		return;
+  	}
+    ko.handle.start = function() {
+      log("Server says we can START the game!");
+      ko._gameTimer = window.setInterval(main, 1000 / 77);
+    }
+    ko.join();
+  }
   
   function main() {
     game.frame += 1;		
     game.update_slice();		
+
     player.handle_input();		
     physics.step();
+
     camera.update();
     view.render(camera);
+
     player.push();
+
     keyboard.monitor();			
   }
   

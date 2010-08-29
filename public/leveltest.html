@@ -8,14 +8,8 @@
 	<canvas id="arena" width="800" height="480"></canvas>
 
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-
-	<script type="text/javascript" src="/js/json.js"></script>
-	<script type="text/javascript" src="/js/socketio/socket.io.js"></script>
-	<script type="text/javascript" src="/js/app.js"></script>	
-
 	<script type="text/javascript" src="js/box2djq.js"></script>
 	<script type="text/javascript" src="js/box2d_debug.js"></script>	
-
 	<script type="text/javascript">
 	
 	
@@ -24,7 +18,7 @@
 			this.img = new Image();
 			this.src = src;
 			this.img.onload = function () {
-				////////console.log("Loaded " + src);
+				//////console.log("Loaded " + src);
 				callback && callback(that.img);
 				SmartImage.queue.splice(SmartImage.queue.indexOf(that), 1);
 				if (SmartImage.queue.length === 0) {
@@ -32,12 +26,12 @@
 				}
 			};
 			this.img.onerror = function () {
-				//////console.log("Error: Couldn't load image " + src);
+				////console.log("Error: Couldn't load image " + src);
 			}
 			SmartImage.queue.push(this);
 		}
 		SmartImage.load_all = function(callback) {
-			//////console.log("Loading all...");
+			////console.log("Loading all...");
 			SmartImage.callback = callback;
 			for (var i = 0; i < SmartImage.queue.length; i++) {
 				SmartImage.queue[i].img.src = SmartImage.queue[i].src;
@@ -55,7 +49,7 @@
 			var poly_sh = new b2PolyDef();
 			poly_sh.vertexCount = plat_data.polygon.length / 2;
 			for (var i = 0; i < plat_data.polygon.length / 2; i++) {
-				poly_sh.vertices[i].Set(plat_data.polygon[i*2] * physics.scale, plat_data.polygon[i*2+1] * physics.scale);
+				poly_sh.vertices[i].Set(plat_data.polygon[i*2], plat_data.polygon[i*2+1]);
 			}
 			poly_sh.restitution = 0.2;
 			poly_sh.friction = 0.4;
@@ -77,7 +71,6 @@
 		View.prototype.render = function(camera) {
 			var cam_aspect = camera.width / camera.height;
 			var view_aspect = this.canvas.width / this.canvas.height;
-			//console.dir(camera);
 			var view_box = {x: camera.x, y: camera.y, width: camera.width, height: camera.height};
 			
 			if (cam_aspect > view_aspect) {
@@ -103,24 +96,23 @@
 			py = Math.max(Math.min(1, py), 0);
 			var bx = (this.canvas.width - bg.width) * px,
 				by = (this.canvas.height - bg.height) * py;
-			
-			// Draw the background
+				
+			// Draw background	
 			this.ctx.drawImage(bg, bx, by, bg.width, bg.height);
 			
-			// Draw the players
-			this.ctx.fillStyle = "#f00";
-			for (var i = 0; i < camera.players; i++) {
-				var p = camera.players[i];
-				p.draw(fx, fy, scale);
+			// Draw players
+			for (var i = 0; i < camera.players.length; i++) {
+				var player = camera.players[i];
+				player.draw(this.ctx, fx, fy, scale);
 			}
 			
-			// Draw the platforms
+			// Draw platforms
 			for (var i = 0; i < level.platforms.length; i++) {
 				var plat = level.platforms[i];
 				this.ctx.drawImage(plat.simg.img, fx + plat.x * scale, fy + plat.y * scale, plat.simg.img.width * scale, plat.simg.img.height * scale);
 			}
 		
-			drawWorld(physics.world, this.ctx, fx, fy, scale / physics.scale);
+			drawWorld(physics.world, this.ctx, fx, fy, scale);
 		}
 		
 		
@@ -128,7 +120,7 @@
 			var world = new b2AABB();
 			world.minVertex.Set(-500, -500);
 			world.maxVertex.Set(500, 500);
-			var gravity = new b2Vec2(0, 25);
+			var gravity = new b2Vec2(0, 250);
 			var doSleep = true;
 			this.world = new b2World(world, gravity, doSleep);
 		}
@@ -194,19 +186,13 @@
 				this.target = {left: 1000, top: 1000, right: -1000, bottom: -1000};
 				for (var i = 0; i < this.players.length; i++) {
 					var p = this.players[i];
-					////console.dir(p.body);
-					var x = p.x;//p.body.m_position.x / physics.scale;
-					var y = p.y;//p.body.m_position.y / physics.scale;
-					//console.log("P.x and P.y: " + x + ", " + y);
-					this.target.left = Math.min((x - this.margin_x), this.target.left);
-					this.target.right = Math.max((x + this.margin_x), this.target.right);
-					this.target.top = Math.min((y - this.margin_y), this.target.top);
-					this.target.bottom = Math.max((y + this.margin_y), this.target.bottom);
-					//console.log("TARGET:");
-					//console.dir(this.target);
+					//console.dir(p.body);
+					this.target.left = Math.min((p.x - this.margin_x), this.target.left);
+					this.target.right = Math.max((p.x + this.margin_x), this.target.right);
+					this.target.top = Math.min((p.y - this.margin_y), this.target.top);
+					this.target.bottom = Math.max((p.y + this.margin_y), this.target.bottom);
 				}
 			}
-			//console.log("IN CAMERA:");
 			var right = this.x + this.width,
 				bottom = this.y + this.height;
 			this.x += (this.target.left - this.x) * this.spring;
@@ -247,62 +233,30 @@
 		};
 		
 		
-		function NPC(id) {
+		function NPC(id, x, y) {
 			this.id = id;
-			this.x = 0;
-			this.y = 0;
-			this.ready = false;
-			NPC.hash[id] = this;
-			camera.players.push(this);
+			this.x = x;
+			this.y = y;
 		}
-		NPC.prototype.draw = function(ox, oy, scale) {
-			this.ctx.fillRect(ox + (this.x - 5) * scale, oy + (this.y - 5) * scale, 10, 10);
-		};
-		NPC.hash = {};
-		NPC.has = function(id) {
-			return (NPC.hash[id] === undefined);
+		NPC.prototype.draw = function(ctx, ox, oy, scale) {
+			ctx.fillStyle = "#f00";
+			ctx.fillRect(ox + this.x * scale - 5, oy + this.y * scale - 5, 10, 10);
 		};
 		
-		function Player(id) {
-			this.id = id;
-			this.x = 0;
-			this.y = 0;
-			this.ready = false;
-			this.r = 8 * physics.scale;
+		
+		function Player(id, x, y) {
+			this.x = x;
+			this.y = y;
+			this.r = 8;
 			this.air_jump = true;
 			this.body = this._build_body();
-			Player.all.push(this);
-			camera.players.push(this);
 		}
-		Player.all = [];
-		Player.prototype.setx = function(x) {
-			if (isNaN(x)) {
-				alert("You just tried to set x to NaN asshole!");
-			}
-			this.x = x;
-			this.body.m_position.x = x * physics.scale;
-		};
-		Player.prototype.sety = function(y) {
-			if (isNaN(y)) {
-				alert("You just tried to set y to NaN asshole!");
-			}		
-			this.y = y;
-			this.body.m_position.y = y * physics.scale;
-		};
-		Player.prototype.getx = function() {
-			this.x = this.body.m_position.x / physics.scale;
-			if (isNaN(this.x)) {
-				alert("Oh shit we've got a NaN up in here!");
-			} 
-			return this.x;
-		};
-		Player.prototype.gety = function() {
-			this.y = this.body.m_position.y / physics.scale;
-			if (isNaN(this.y)) {
-				alert("Oh shit another NaN bitches!");
-			}
-			return this.y;
-		};
+		Player.prototype.draw = function(ctx, ox, oy, scale) {
+			this.x = this.body.m_position.x;
+			this.y = this.body.m_position.y;
+			ctx.fillStyle = "#f00";
+			ctx.fillRect(ox + this.x * scale - 5, oy + this.y * scale - 5, 10, 10);
+		};		
 		Player.prototype._build_body = function() {
 			var circle = new b2CircleDef();
 			circle.density = 0.25;
@@ -312,7 +266,7 @@
 			
 			var body = new b2BodyDef();
 			body.AddShape(circle);
-			body.position.Set(this.x * physics.scale, this.y * physics.scale);
+			body.position.Set(this.x, this.y);
 			body.angularDamping = 0.7;
 			body.linearDamping = 0.01;
 			body.allowSleep = false;
@@ -337,37 +291,31 @@
 			var offset = b2Math.AddVV(this.body.GetCenterPosition(), new b2Vec2(0, -this.r * 15));
 /*			for (var k in this.body) {
 				if (typeof(this.body[k]) === 'function') {
-					//console.log(k);
+					console.log(k);
 				}
 			}
 */
 //			this.body.ApplyForce(new b2Vec2(x * 15, 0), offset);
-			this.body.ApplyForce(new b2Vec2(x * 5, 0), this.body.GetCenterPosition());
-			this.body.ApplyTorque(200 * x);
+			this.body.ApplyForce(new b2Vec2(x * 10000, 0), this.body.GetCenterPosition());
+			this.body.ApplyTorque(1000000 * x);
 		};
 		Player.prototype._jump = function() {
 			var contact = this.body.GetContactList();
 			while (contact) {
-				////console.dir(contact);
+				//console.dir(contact);
 				if (contact.contact.m_manifold[0].normal.y < 0) {
 					this.air_jump = true;
-					//console.log("Jump");
-					this.body.ApplyImpulse(new b2Vec2(0, -11), this.body.GetCenterPosition());					
+					this.body.ApplyImpulse(new b2Vec2(0, -11000), this.body.GetCenterPosition());					
 					return;
 				}
 				contact = contact.next;
 			}
 			if (this.air_jump) {
 				this.air_jump = false;
-				//console.log("Air jump");
-				this.body.ApplyImpulse(new b2Vec2(0, -11), this.body.GetCenterPosition());					
+				this.body.ApplyImpulse(new b2Vec2(0, -11000), this.body.GetCenterPosition());					
 				return;
 			}			
 		};
-		Player.prototype.push = function() {
-			ko.send({ method: 'position', args: [this.id, this.getx(), this.gety()] });
-			//ko.send({ method: 'position', args: [this.id, 0, 0] });
-		}
 		
 		
 		function Game() {
@@ -400,83 +348,34 @@
 		}
 
 		
-	
-		
-		
-		
 		var game = new Game();
 		var level = new Level();
 		var view = new View('arena');
 		var physics = new Physics();
 		var keyboard = new Keyboard();
 		var camera = new Camera(.04, 100, 100);
-		var player;
 		
-		ko.handle.receiveid = function(id) {
-			player = new Player(id);		
-		}
-
-
-		ko.handle.playerjoin = function(id_arr) {
-			console.log("Player joined with ids: %s", Array.prototype.slice.call(arguments, 0).join(","));
-			for (var i = 0; i < arguments.length; i++) {
-				var id = arguments[i];
-				if (id === Player.id) {
-					player.setx(-100 + 50 * i);
-					player.sety(-250);
-				}
-				else if (!NPC.has(id)) {
-					var new_npc = new NPC(arguments[i]);
-					new_npc.x = -100 + 50 * i;
-					new_npc.y = -250;
-				}
-			}
-		};
+		var player = new Player("me", 0, -250);		
+		camera.players.push(player);
 		
-
-		ko.handle.position = function(id, x, y) {			// This causes the problem with the display
-			for (var i = 0; i < Player.all.length; i++) {
-				if (Player.all[i].id === id) {
-					//console.log("RECEIVED X: " + x + ", Y:" + y);
-					Player.all[i].setx(x);
-					Player.all[i].sety(y);
-				}
-			}
-		};
-		
-	    ko.handle.status = function(status){
-	      console.log("status: "+status)
-	      if ("gameover" == status)
-	        clearInterval(ko._gameTimer)
-	    }
+		var npc = new NPC("notme", 20, -200);
+		camera.players.push(npc);
 		
 		//camera.target = player;
 		
 		function start() {
-			ko.handle.start = function() {
-
-				//console.log("Server says we can START the game!");
-				console.log("Server says we can START the game!");
-				ko._gameTimer = window.setInterval(main, 1000 / 77);
-				window.setInterval(background, 1000/ 20);
-			}
-			ko.join();
+			window.setInterval(main, 1000 / 77);
 			//main();
 		}
 		
 		function main() {
 			game.frame += 1;		
 			game.update_slice();		
-			player.handle_input();
+			player.handle_input();		
 			physics.step();
-			player.push();
 			camera.update();
 			view.render(camera);
 			keyboard.monitor();			
-		}
-		
-		function background() {
-			
 		}
 		
 		level.load('test_level', start);	// Start the game after loading!

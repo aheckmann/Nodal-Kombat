@@ -368,13 +368,18 @@
 				}
 			}
 		};
+    ko.handle.status = function(status){
+      console.log("status: "+status)
+      if ("gameover" == status)
+        clearInterval(ko._gameTimer)
+    }
 		
 		//camera.target = player;
 		
 		function start() {
 			ko.handle.start = function() {
 				console.log("Server says we can START the game!");
-				window.setInterval(main, 1000 / 77);
+				ko._gameTimer = window.setInterval(main, 1000 / 77);
 			}
 			ko.join();
 			//main();

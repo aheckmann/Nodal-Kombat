@@ -35,6 +35,11 @@ h2 {
 	margin-bottom: 30px;
 }
 
+#logo {
+	position: absolute;
+	top: 10px;
+	left: 20px;
+}
 
 #footer {
 	height: 1em;
@@ -67,14 +72,14 @@ h2 {
 	margin-top: 70px;
 }
 #index #vote-button img, #game #vote-button img {
-	top: -11px;
-	left: 260px;
+	top: -5px;
+	left: 410px;
 }
 
 
 #player-box {
 	position: absolute;
-	left: 850px;
+	right: 80px;
 	top: 0px;
 }
 

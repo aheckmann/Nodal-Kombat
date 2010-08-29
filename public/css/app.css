@@ -81,7 +81,7 @@ h2 {
 .second {
 	margin-top: 70px;
 }
-#index #vote-button img, #game #vote-button img {
+#index #vote-button img, #fighting #vote-button img {
 	top: -5px;
 	left: 410px;
 }
@@ -311,7 +311,7 @@ width:206px;
 	width: 135px;
 	text-align: center;
 	padding: 10px;
-	border: 2px solid white;
+	border: 2px solid black;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
@@ -329,7 +329,7 @@ width:206px;
 }
 
 .character-container.selected {
-	border: 2px solid black;
+	border: 2px solid silver;
 }
 
 .character-container:hover {
@@ -337,7 +337,7 @@ width:206px;
 }
 
 .character-container.selected:hover {
-	border: 2px solid black;
+	border: 2px solid orange;
 }
 
 #choose-character-button {

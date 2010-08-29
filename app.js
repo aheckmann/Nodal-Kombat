@@ -26,12 +26,14 @@ app.configure(function(){
   app.set('views', __dirname + '/views')
 })
 .error(function(err, req, res, next){
-  if (err && 2 === err.errno){
-    res.render("404.jade", { layout: false }, function(err, content){
-      res.send(content || "aaaaaah!! I've been shot!", 404)  
+  console.dir(err)
+  if (!err || 2 !== err.errno)
+    return res.render("500.jade", function(err, content){
+      res.send(content || "uhh, Look over there!", 500)  
     })
-    console.dir(err)
-  }    
+  res.render("404.jade", { layout: false }, function(err, content){
+    res.send(content || "aaaaaah!! I've been shot!", 404)  
+  })
 })
 
 require("./lib/redis")

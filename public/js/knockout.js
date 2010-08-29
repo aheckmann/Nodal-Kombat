@@ -17,7 +17,7 @@ var knockout = {
 	}
 	
 	
-	updateLeaders: function(data) {
+	, updateLeaders: function(data) {
 		
 	
 	}

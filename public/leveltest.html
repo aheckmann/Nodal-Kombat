@@ -357,7 +357,7 @@
 			player = new Player(id);		
 		}
 		ko.handle.playerjoin = function(id) {
-			console.log("Player joined with id " + id + "!");
+			console.log("Player joined with ids: %s", Array.prototype.slice.call(arguments, 0).join(","));
 			new Player(id);
 		};
 		ko.handle.position = function(id, x, y) {

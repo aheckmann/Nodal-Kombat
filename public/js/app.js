@@ -2,7 +2,8 @@
   io.setPath("/js/socketio/")
 
   window.ko = {
-    handle: 
+    playersRemaining: 0
+  , handle: 
     { jump: function(){ log("ko.jump");
        // log(arguments)
         }
@@ -27,7 +28,11 @@
         log(arguments) 
       }
     , status: function(){log("status: gameover");log(arguments) }
-    , die: function(killer, victim){log("%s killed %s", killer, victim) }
+    , die: function(killer, victim){
+        log("%s killed %s", killer, victim) 
+        if (1 === --ko.playersRemaining)
+          ko.handle.status("gameover")
+      }
     , chatspeed: function(speed){ log("set the game speed to %s", speed) }
     }
   , send: function(events){
@@ -41,6 +46,52 @@
       socket.send("join")
     }
   }
+  ko.handle.start = function() {
+    log("Server says we can START the game!");
+    ko._gameTimer = window.setInterval(main, 1000 / 77);
+    $(document).trigger("gamestart")
+  }
+  ko.handle.receiveid = function(id, userkey) {
+  	if (SINGLE_USER) {
+	  	return;	
+  	} 
+    player = window.player = new Player(id, 0, -250, userkey);		
+    camera.players.push(player);			
+  }
+
+  ko.handle.playerjoin = function() {
+    ko.playersRemaining = arguments.length
+    log("Player joined with ids: %s", Array.prototype.slice.call(arguments, 0).join(","));
+    for (var i = 0; i < arguments.length; i++) {
+      var id = arguments[i];
+      if (id === player.id) {
+        player.moveTo(i * 50, -250);
+      }
+      else if (!NPC.hash[id]) {
+        var new_npc = new NPC(id, i * 50, -250);
+        camera.players.push(new_npc);
+      }
+    }
+  };
+  
+  ko.handle.status = function(status){
+    log("status: "+status)
+    if ("gameover" === status)
+      clearInterval(ko._gameTimer)
+  }
+  
+  ko.handle.position = function(id, x, y) {
+    var players = camera.players
+      , len = players.length
+      , p
+    while (len--){
+      p = players[len];
+      if (p.id == id) {
+        p.moveTo(x, y);
+        return;
+      }
+    }
+  };
 
   var socket = new io.Socket(location.hostname)
   socket.connect()
@@ -653,47 +704,7 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
   
   //camera.target = player;
   
-  ko.handle.receiveid = function(id, userkey) {
-  	if (SINGLE_USER) {
-	  	return;	
-  	} 
-    player = window.player = new Player(id, 0, -250, userkey);		
-    camera.players.push(player);			
-  }
-
-  ko.handle.playerjoin = function() {
-    log("Player joined with ids: %s", Array.prototype.slice.call(arguments, 0).join(","));
-    for (var i = 0; i < arguments.length; i++) {
-      var id = arguments[i];
-      if (id === player.id) {
-        player.moveTo(i * 50, -250);
-      }
-      else if (!NPC.hash[id]) {
-        var new_npc = new NPC(id, i * 50, -250);
-        camera.players.push(new_npc);
-      }
-    }
-  };
-  
-  ko.handle.status = function(status){
-    log("status: "+status)
-    if ("gameover" === status)
-      clearInterval(ko._gameTimer)
-  }
-  
-  ko.handle.position = function(id, x, y) {
-    var players = camera.players
-      , len = players.length
-      , p
-    while (len--){
-      p = players[len];
-      if (p.id == id) {
-        p.moveTo(x, y);
-        return;
-      }
-    }
-  };
-  
+    
   function log(msg) {
   	if (window.console) {
   		window.console.log.apply(window.console, arguments);
@@ -701,18 +712,15 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
   }
 
   window.start = function start() {
-  		log("Starting game");  
+  	log("Starting game");  
   	if (SINGLE_USER) {
-  		log("Starting game");
-		player = new Player("testme", 0, -150);		
-		camera.players.push(player);			
-		ko._gameTimer = window.setInterval(main, 1000 / 77);
-  		return;
-  	}
-    ko.handle.start = function() {
-      log("Server says we can START the game!");
+      log("Starting game");
+      player = new Player("testme", 0, -150);		
+      camera.players.push(player);			
       ko._gameTimer = window.setInterval(main, 1000 / 77);
+      return;
     }
+    
     ko.join();
   }
   

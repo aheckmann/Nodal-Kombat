@@ -257,30 +257,33 @@
 
 		NPC.hash = [];
 		
-		/*
+
 		function Sprite(url, col_w, row_h, w, h) {
 			this.col_w = col_w;
 			this.row_h = row_h;
 			this.w = w;
 			this.h = h;
-			this.sheet = new SmartImage(url);
+			this.simg = new SmartImage(url);
 		}
 		
 		
 		function Animation(sprite) {
 			this.sprite = sprite;
-			this.
+			this.frame = 0;
+			this.order = [];
 		}
 		Animation.prototype.enter_frame = function() {
-			this.frame = (this.frame + 1) % this.images.length;
+			this.frame = (this.frame + 1) % (this.order.length / 2);
 		};
-		Animation.prototype.add_image = function(url) {
-			this.images.push(new SmartImage(url));
+		Animation.prototype.add_image = function(col, row) {
+			this.order.concat([row, col]);
 		};
-		Animation.prototype.draw(ctx, x, y, scale) {
-			
+		
+		Animation.prototype.draw = function(ctx, x, y, scale) {
+			var col = this.order[this.frame * 2];
+			var row = this.order[this.frame * 2 + 1];
+			ctx.drawImage(this.sprite.simg.img, this.sprite.col_w * col, this.sprite.row_h * row, this.sprite.w, this.sprite.h, x, y, this.sprite.w * scale, this.sprite.h * scale);
 		};
-		*/
 		
 		function Player(id, x, y) {
 			this.id = id;
@@ -289,6 +292,7 @@
 			this.r = 8;
 			this.air_jump = true;
 			this.body = this._build_body();
+			
 		}
 		Player.prototype.push = function() {
 			ko.send({method: "position", args: [this.id, this.x, this.y] });
@@ -300,11 +304,11 @@
 		Player.prototype.draw = function(ctx, ox, oy, scale) {
 			this.x = this.body.m_position.x;
 			this.y = this.body.m_position.y;
-			ctx.fillStyle = "#f00";
-			ctx.fillRect(ox + this.x * scale - 5, oy + this.y * scale - 5, 10, 10);
+			//ctx.fillStyle = "#f00";
+			//ctx.fillRect(ox + this.x * scale - 5, oy + this.y * scale - 5, 10, 10);
 			
-			//this.animations[0].enter_frame();
-			//this.animations[0].draw(ctx, ox + x, oy + y, scale);
+			animation['run'].enter_frame();
+			animation['run'].draw(ctx, ox + (this.x - 32) * scale, oy + (this.y - 32) * scale, scale);
 		};		
 		Player.prototype._build_body = function() {
 			var circle = new b2CircleDef();
@@ -404,20 +408,36 @@
 		var keyboard = new Keyboard();
 		var camera = new Camera(.04, 100, 100);
 		var player;
+		
+		var animation = {};
+		animation['run'] = new Animation(new Sprite('characters/aaron.png', 64, 128, 64, 128));
+		animation['run'].order = [
+			0, 0,
+			1, 0,
+			2, 0,
+			3, 0
+		];
+
 				
 		//camera.target = player;
 		
 		function start() {
 			ko.handle.start = function() {
 				console.log("Server says we can START the game!");
-				ko._gameTimer = window.setInterval(main, 1000 / 77);
+				//ko._gameTimer = window.setInterval(main, 1000 / 77);
 			}
 			ko.join();
+			
+			// For debugging:
+			player = new Player("testme", 0, -250);		
+			camera.players.push(player);			
+			ko._gameTimer = window.setInterval(main, 1000 / 77);
+			
 		}
 		
 		ko.handle.receiveid = function(id) {	
-			player = new Player(id, 0, -250);		
-			camera.players.push(player);			
+			//player = new Player(id, 0, -250);		
+			//camera.players.push(player);			
 		}
 
 		ko.handle.playerjoin = function() {
@@ -450,7 +470,7 @@
 	    	}
 	    };
 
-		
+
 		function main() {
 			game.frame += 1;		
 			game.update_slice();		

@@ -273,15 +273,15 @@
 			this.order = [];
 		}
 		Animation.prototype.enter_frame = function() {
-			this.frame = (this.frame + 1) % (this.order.length / 2);
+			this.frame = (this.frame + 1) % (this.order.length * 4);
 		};
 		Animation.prototype.add_image = function(col, row) {
 			this.order.concat([row, col]);
 		};
 		
 		Animation.prototype.draw = function(ctx, x, y, scale) {
-			var col = this.order[this.frame * 2];
-			var row = this.order[this.frame * 2 + 1];
+			var col = this.order[~~(this.frame * .25)];
+			var row = this.order[~~(this.frame * .25) + 1];
 			ctx.drawImage(this.sprite.simg.img, this.sprite.col_w * col, this.sprite.row_h * row, this.sprite.w, this.sprite.h, x, y, this.sprite.w * scale, this.sprite.h * scale);
 		};
 		
@@ -308,7 +308,7 @@
 			//ctx.fillRect(ox + this.x * scale - 5, oy + this.y * scale - 5, 10, 10);
 			
 			animation['run'].enter_frame();
-			animation['run'].draw(ctx, ox + (this.x - 32) * scale, oy + (this.y - 32) * scale, scale);
+			animation['run'].draw(ctx, ox + (this.x - 32) * scale, oy + (this.y - 118) * scale, scale);
 		};		
 		Player.prototype._build_body = function() {
 			var circle = new b2CircleDef();

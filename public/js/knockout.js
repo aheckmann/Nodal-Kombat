@@ -33,17 +33,18 @@ var knockout = {
 
 	    $(".character-container").live("click", function(){
 	      $("#character-selection-container").hide()
-	      var waitingMessage = $("#waiting")
-	      
+	      var waitingMessage = $("#waiting");
+	      var instruction = $("#instruction");
 	      
 	      $(document).bind("gamestart",function(){
-	        console.log("adfasdfadfasdfads")
 	      	waitingMessage.fadeOut();
+	      	instruction.animate({right:'0px',top:'0px'})
 	      });
 	      
 	      level.load('test_level', start); 
 	      
-	      waitingMessage.fadeIn()
+	      waitingMessage.fadeIn();
+	      instruction.fadeIn();
 	      
 	     
 	    })

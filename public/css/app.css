@@ -307,8 +307,19 @@ width:206px;
 	display: none;
 }
 
+#instruction {
+	position: absolute;
+	top: 33px;
+	right: 255px;
+	padding: 2px;
+	color: white;
+	background-color: black;
+	font-size: 18px;
+	display: none;
+}
+
 #character-selection-container {
-	width: 860px;
+	width: 830px;
 	position: absolute;
   left: 0px;
   top: 74px;
@@ -337,10 +348,13 @@ width:206px;
 .character-container img {
 	height: 180px;
 	width:  100px;
+	-moz-box-shadow: 0px 0px 5px yellow;
+	-webkit-box-shadow: 0px 0px 5px yellow;
 }
 
 .character-container span {
 	display: block;
+	color: silver;
 }
 
 .character-container.selected {

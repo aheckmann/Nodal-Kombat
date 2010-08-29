@@ -79,50 +79,77 @@
 			this.oy = this.canvas.height * .5;
 		}
 		View.prototype.render = function(camera) {
-			var cam_aspect = camera.width / camera.height;
-			var view_aspect = this.canvas.width / this.canvas.height;
-			var view_box = {x: camera.x, y: camera.y, width: camera.width, height: camera.height};
+      var camWidth = camera.width
+        , camHeight = camera.height
+        , cam_aspect = camWidth / camHeight
+        , canvWidth = this.canvas.width
+        , canvHeight = this.canvas.height
+        , view_aspect = canvWidth / canvHeight
+        , level = level
+        , h_added
+        , w_added
+        , view_box = 
+          { x: camera.x
+          , y: camera.y
+          , width: camWidth
+          , height: camHeight
+          }
+        ;
 			
 			if (cam_aspect > view_aspect) {
-				var h_added = (view_box.width * (view.canvas.height / this.canvas.width) - view_box.height) * .5;
+				h_added = (view_box.width * (view.canvas.height / canvWidth) - view_box.height) * .5;
 				view_box.y -= h_added;
 				view_box.height += h_added * 2;
 			}
 			else {
-				var w_added = (view_box.height * (this.canvas.width / this.canvas.height) - view_box.width) * .5;
+				w_added = (view_box.height * (canvWidth / canvHeight) - view_box.width) * .5;
 				view_box.x -= w_added;
 				view_box.width += w_added * 2;
 			}
 			
-			var scale = this.canvas.width / view_box.width;
+			var scale = canvWidth / view_box.width;
 		
-			var bg = level.background.img,
-				px = (((view_box.x + view_box.width * .5) + level.w) / (level.w * 2)),
-				py = (((view_box.y + view_box.height * .5) + level.h) / (level.h * 2)),
-				fx = -view_box.x * scale,
-				fy = -view_box.y * scale;
+      var bg = level.background.img
+        , px = (((view_box.x + view_box.width * .5) + level.w) / (level.w * 2))
+        , py = (((view_box.y + view_box.height * .5) + level.h) / (level.h * 2))
+        , fx = -view_box.x * scale
+        , fy = -view_box.y * scale
+        ;
 				
 			px = Math.max(Math.min(1, px), 0);
 			py = Math.max(Math.min(1, py), 0);
-			var bx = (this.canvas.width - bg.width) * px,
-				by = (this.canvas.height - bg.height) * py;
+      var bx = (canvWidth - bg.width) * px
+        , by = (canvHeight - bg.height) * py
+        , ctx = this.ctx
+        ;
 				
 			// Draw background	
-			this.ctx.drawImage(bg, bx, by, bg.width, bg.height);
+			ctx.drawImage(bg, bx, by, bg.width, bg.height);
 			
 			// Draw players
-			for (var i = 0; i < camera.players.length; i++) {
-				var player = camera.players[i];
-				player.draw(this.ctx, fx, fy, scale);
-			}
+      var players = camera.players
+        , len = players.length
+      while (len--)
+				players[len].draw(ctx, fx, fy, scale);
 			
 			// Draw platforms
-			for (var i = 0; i < level.platforms.length; i++) {
-				var plat = level.platforms[i];
-				this.ctx.drawImage(plat.simg.img, fx + plat.x * scale, fy + plat.y * scale, plat.simg.img.width * scale, plat.simg.img.height * scale);
-			}
+      var platforms = level.platforms
+        , len = platforms.length
+        , plat
+        , img
+      while (len--){
+				plat = platforms[len];
+        img = plat.simg.img;
+        ctx.drawImage(
+          img
+        , fx + plat.x * scale
+        , fy + plat.y * scale
+        , img.width * scale
+        , img.height * scale
+        );
+      }
 		
-			drawWorld(physics.world, this.ctx, fx, fy, scale);
+			drawWorld(physics.world, ctx, fx, fy, scale);
 		}
 		
 		

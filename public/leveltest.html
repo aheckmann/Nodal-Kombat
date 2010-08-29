@@ -103,9 +103,18 @@
 			py = Math.max(Math.min(1, py), 0);
 			var bx = (this.canvas.width - bg.width) * px,
 				by = (this.canvas.height - bg.height) * py;
-			//console.dir(view_box);	// has NaN
-			////console.dir([bx, by, bg.width, bg.height]);
+			
+			// Draw the background
 			this.ctx.drawImage(bg, bx, by, bg.width, bg.height);
+			
+			// Draw the players
+			this.ctx.fillStyle = "#f00";
+			for (var i = 0; i < camera.players; i++) {
+				var p = camera.players[i];
+				p.draw(fx, fy, scale);
+			}
+			
+			// Draw the platforms
 			for (var i = 0; i < level.platforms.length; i++) {
 				var plat = level.platforms[i];
 				this.ctx.drawImage(plat.simg.img, fx + plat.x * scale, fy + plat.y * scale, plat.simg.img.width * scale, plat.simg.img.height * scale);
@@ -116,7 +125,6 @@
 		
 		
 		function Physics() {
-			this.scale = 0.1;
 			var world = new b2AABB();
 			world.minVertex.Set(-500, -500);
 			world.maxVertex.Set(500, 500);
@@ -187,8 +195,8 @@
 				for (var i = 0; i < this.players.length; i++) {
 					var p = this.players[i];
 					////console.dir(p.body);
-					var x = p.getx();//p.body.m_position.x / physics.scale;
-					var y = p.gety();//p.body.m_position.y / physics.scale;
+					var x = p.x;//p.body.m_position.x / physics.scale;
+					var y = p.y;//p.body.m_position.y / physics.scale;
 					//console.log("P.x and P.y: " + x + ", " + y);
 					this.target.left = Math.min((x - this.margin_x), this.target.left);
 					this.target.right = Math.max((x + this.margin_x), this.target.right);
@@ -239,10 +247,27 @@
 		};
 		
 		
+		function NPC(id) {
+			this.id = id;
+			this.x = 0;
+			this.y = 0;
+			this.ready = false;
+			NPC.hash[id] = this;
+			camera.players.push(this);
+		}
+		NPC.prototype.draw = function(ox, oy, scale) {
+			this.ctx.fillRect(ox + (this.x - 5) * scale, oy + (this.y - 5) * scale, 10, 10);
+		};
+		NPC.hash = {};
+		NPC.has = function(id) {
+			return (NPC.hash[id] === undefined);
+		};
+		
 		function Player(id) {
 			this.id = id;
 			this.x = 0;
 			this.y = 0;
+			this.ready = false;
 			this.r = 8 * physics.scale;
 			this.air_jump = true;
 			this.body = this._build_body();
@@ -385,32 +410,30 @@
 		var physics = new Physics();
 		var keyboard = new Keyboard();
 		var camera = new Camera(.04, 100, 100);
-		
 		var player;
 		
 		ko.handle.receiveid = function(id) {
-			//console.log("Joined the game, got MY id of " + id);
 			player = new Player(id);		
 		}
+
+
 		ko.handle.playerjoin = function(id_arr) {
-			//console.dir(arguments);
+			console.log("Player joined with ids: %s", Array.prototype.slice.call(arguments, 0).join(","));
 			for (var i = 0; i < arguments.length; i++) {
-				var exists = false;
-				for (var j = 0; j < Player.all.length; j++) {
-					if (Player.all[j].id === arguments[i]) {
-						exists = true;
-						break;
-					}
+				var id = arguments[i];
+				if (id === Player.id) {
+					player.setx(-100 + 50 * i);
+					player.sety(-250);
 				}
-				if (!exists) {
-					//console.log("Creating new Player with id " + arguments[i]);
-					var new_player = new Player(arguments[i]);
-					new_player.setx(-100 + 50 * i);
-					new_player.sety(-250);
+				else if (!NPC.has(id)) {
+					var new_npc = new NPC(arguments[i]);
+					new_npc.x = -100 + 50 * i;
+					new_npc.y = -250;
 				}
 			}
-			//new Player(id);
 		};
+		
+
 		ko.handle.position = function(id, x, y) {			// This causes the problem with the display
 			for (var i = 0; i < Player.all.length; i++) {
 				if (Player.all[i].id === id) {
@@ -421,12 +444,20 @@
 			}
 		};
 		
+	    ko.handle.status = function(status){
+	      console.log("status: "+status)
+	      if ("gameover" == status)
+	        clearInterval(ko._gameTimer)
+	    }
+		
 		//camera.target = player;
 		
 		function start() {
 			ko.handle.start = function() {
+
 				//console.log("Server says we can START the game!");
-				window.setInterval(main, 1000 / 77);
+				console.log("Server says we can START the game!");
+				ko._gameTimer = window.setInterval(main, 1000 / 77);
 				window.setInterval(background, 1000/ 20);
 			}
 			ko.join();
@@ -438,13 +469,14 @@
 			game.update_slice();		
 			player.handle_input();
 			physics.step();
+			player.push();
 			camera.update();
 			view.render(camera);
 			keyboard.monitor();			
 		}
 		
 		function background() {
-			player.push();
+			
 		}
 		
 		level.load('test_level', start);	// Start the game after loading!

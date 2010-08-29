@@ -247,7 +247,7 @@ Animation.prototype.draw = function(frame, ctx, x, y, scale, flip) {
       );
     }
 		
-    //drawWorld(physics.world, ctx, fx, fy, scale);
+    drawWorld(physics.world, ctx, fx, fy, scale);
   }
 		
 		
@@ -589,7 +589,7 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
   
   
   var game = new Game();
-  var level = new Level();
+  var level = window.level = new Level();
   var view = new View('arena');
   var physics = new Physics();
   var keyboard = new Keyboard();
@@ -631,7 +631,7 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
 
 	   
      
-  var SINGLE_USER = true;//false;
+  var SINGLE_USER = false;
   
   //camera.target = player;
   
@@ -682,7 +682,7 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
   	}
   }
 
-  function start() {
+  window.start = function start() {
   		log("Starting game");  
   	if (SINGLE_USER) {
   		log("Starting game");

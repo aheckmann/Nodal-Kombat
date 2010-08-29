@@ -6,7 +6,6 @@
     { jump: function(){ console.log("ko.jump"); console.log(arguments) }
     , punch: function(){ console.log("ko.punch"); console.log(arguments) }
     , start: function(){ console.log("ko.start"); console.log(arguments) }
-    , gameover: function(){ console.log("ko.gameover"); console.log(arguments) }
     , playerquit: function(){ console.log("playerquit"); console.log(arguments) }
     , countdown: function(){ console.log("countdown"); console.log(arguments) }
     , status: function(){console.log("status: gameover");console.log(arguments) }

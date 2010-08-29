@@ -555,7 +555,7 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
 	];
 	   
      
-  var SINGLE_USER = false;//true;
+  var SINGLE_USER = true;//false;
   
   //camera.target = player;
   

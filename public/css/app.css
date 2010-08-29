@@ -103,8 +103,16 @@ h2 {
 #live-action-container {
 	height: 490px;
 	position: relative;
-	border: 1px solid silver;
 	margin-top: 40px;
+	width: 850px;
+	text-align: center;
+}
+
+#live-action-container #live-action-placeholder {
+	border: 1px solid gray;
+	padding: 0px;
+	-moz-box-shadow: 0px 0px 31px red;
+	-webkit-box-shadow: 0px 0px 31px red;
 }
 
 #game-info {

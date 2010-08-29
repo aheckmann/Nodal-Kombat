@@ -402,6 +402,7 @@ div.leaderboard.summary {
 #logged-in-box {
 	padding: 0px 0px 10px 15px;
 	position: relative;
+	top: -10px;
 }
 
 #logged-in-box img {

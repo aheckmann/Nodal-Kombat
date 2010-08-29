@@ -213,7 +213,7 @@ Animation.prototype.draw = function(ctx, x, y, scale) {
       );
     }
 		
-    //drawWorld(physics.world, ctx, fx, fy, scale);
+    drawWorld(physics.world, ctx, fx, fy, scale);
   }
 		
 		
@@ -411,6 +411,13 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
     circle.restitution = -0.1;
     circle.radius = this.r;
     circle.friction = 1.5;
+    
+    var rect = new b2PolyDef();
+    rect.vertexCount = 4;
+    rect.vertices[0].Set(-this.r, 0);
+    rect.vertices[1].Set(-this.r, -128);
+    rect.vertices[2].Set(this.r, -128);
+    rect.vertices[3].Set(this.r, 0);
     
     var body = new b2BodyDef();
     body.AddShape(circle);

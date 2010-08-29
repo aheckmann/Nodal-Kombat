@@ -412,6 +412,11 @@ div.leaderboard.summary {
 	top: -10px;
 }
 
+#logged-out-box {
+	position: relative;
+	width: 90px;
+}
+
 #logged-in-box img {
 	border: 1px solid black;
 	padding: 2px;

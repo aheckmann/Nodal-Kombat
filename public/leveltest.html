@@ -49,7 +49,7 @@
 			var poly_sh = new b2PolyDef();
 			poly_sh.vertexCount = plat_data.polygon.length / 2;
 			for (var i = 0; i < plat_data.polygon.length / 2; i++) {
-				poly_sh.vertices[i].Set(plat_data.polygon[i*2] * physics.scale, plat_data.polygon[i*2+1] * physics.scale);
+				poly_sh.vertices[i].Set(plat_data.polygon[i*2], plat_data.polygon[i*2+1]);
 			}
 			poly_sh.restitution = 0.2;
 			poly_sh.friction = 0.4;
@@ -96,23 +96,31 @@
 			py = Math.max(Math.min(1, py), 0);
 			var bx = (this.canvas.width - bg.width) * px,
 				by = (this.canvas.height - bg.height) * py;
+				
+			// Draw background	
 			this.ctx.drawImage(bg, bx, by, bg.width, bg.height);
+			
+			// Draw players
+			for (var i = 0; i < camera.players.length; i++) {
+				var player = camera.players[i];
+				player.draw(this.ctx, fx, fy, scale);
+			}
+			
+			// Draw platforms
 			for (var i = 0; i < level.platforms.length; i++) {
 				var plat = level.platforms[i];
 				this.ctx.drawImage(plat.simg.img, fx + plat.x * scale, fy + plat.y * scale, plat.simg.img.width * scale, plat.simg.img.height * scale);
 			}
 		
-			console.log("scales: " + scale + " / " + physics.scale);
-			drawWorld(physics.world, this.ctx, fx, fy, scale / physics.scale);
+			drawWorld(physics.world, this.ctx, fx, fy, scale);
 		}
 		
 		
 		function Physics() {
-			this.scale = 0.1;
 			var world = new b2AABB();
 			world.minVertex.Set(-500, -500);
 			world.maxVertex.Set(500, 500);
-			var gravity = new b2Vec2(0, 25);
+			var gravity = new b2Vec2(0, 250);
 			var doSleep = true;
 			this.world = new b2World(world, gravity, doSleep);
 		}
@@ -179,12 +187,10 @@
 				for (var i = 0; i < this.players.length; i++) {
 					var p = this.players[i];
 					//console.dir(p.body);
-					var x = p.body.m_position.x / physics.scale;
-					var y = p.body.m_position.y / physics.scale;
-					this.target.left = Math.min((x - this.margin_x), this.target.left);
-					this.target.right = Math.max((x + this.margin_x), this.target.right);
-					this.target.top = Math.min((y - this.margin_y), this.target.top);
-					this.target.bottom = Math.max((y + this.margin_y), this.target.bottom);
+					this.target.left = Math.min((p.x - this.margin_x), this.target.left);
+					this.target.right = Math.max((p.x + this.margin_x), this.target.right);
+					this.target.top = Math.min((p.y - this.margin_y), this.target.top);
+					this.target.bottom = Math.max((p.y + this.margin_y), this.target.bottom);
 				}
 			}
 			var right = this.x + this.width,
@@ -227,13 +233,30 @@
 		};
 		
 		
-		function Player(x, y) {
+		function NPC(id, x, y) {
+			this.id = id;
 			this.x = x;
 			this.y = y;
-			this.r = 8 * physics.scale;
+		}
+		NPC.prototype.draw = function(ctx, ox, oy, scale) {
+			ctx.fillStyle = "#f00";
+			ctx.fillRect(ox + this.x * scale - 5, oy + this.y * scale - 5, 10, 10);
+		};
+		
+		
+		function Player(id, x, y) {
+			this.x = x;
+			this.y = y;
+			this.r = 8;
 			this.air_jump = true;
 			this.body = this._build_body();
 		}
+		Player.prototype.draw = function(ctx, ox, oy, scale) {
+			this.x = this.body.m_position.x;
+			this.y = this.body.m_position.y;
+			ctx.fillStyle = "#f00";
+			ctx.fillRect(ox + this.x * scale - 5, oy + this.y * scale - 5, 10, 10);
+		};		
 		Player.prototype._build_body = function() {
 			var circle = new b2CircleDef();
 			circle.density = 0.25;
@@ -243,7 +266,7 @@
 			
 			var body = new b2BodyDef();
 			body.AddShape(circle);
-			body.position.Set(this.x * physics.scale, this.y * physics.scale);
+			body.position.Set(this.x, this.y);
 			body.angularDamping = 0.7;
 			body.linearDamping = 0.01;
 			body.allowSleep = false;
@@ -273,8 +296,8 @@
 			}
 */
 //			this.body.ApplyForce(new b2Vec2(x * 15, 0), offset);
-			this.body.ApplyForce(new b2Vec2(x * 5, 0), this.body.GetCenterPosition());
-			this.body.ApplyTorque(200 * x);
+			this.body.ApplyForce(new b2Vec2(x * 10000, 0), this.body.GetCenterPosition());
+			this.body.ApplyTorque(1000000 * x);
 		};
 		Player.prototype._jump = function() {
 			var contact = this.body.GetContactList();
@@ -282,16 +305,14 @@
 				//console.dir(contact);
 				if (contact.contact.m_manifold[0].normal.y < 0) {
 					this.air_jump = true;
-					console.log("Jump");
-					this.body.ApplyImpulse(new b2Vec2(0, -11), this.body.GetCenterPosition());					
+					this.body.ApplyImpulse(new b2Vec2(0, -11000), this.body.GetCenterPosition());					
 					return;
 				}
 				contact = contact.next;
 			}
 			if (this.air_jump) {
 				this.air_jump = false;
-				console.log("Air jump");
-				this.body.ApplyImpulse(new b2Vec2(0, -11), this.body.GetCenterPosition());					
+				this.body.ApplyImpulse(new b2Vec2(0, -11000), this.body.GetCenterPosition());					
 				return;
 			}			
 		};
@@ -334,10 +355,10 @@
 		var keyboard = new Keyboard();
 		var camera = new Camera(.04, 100, 100);
 		
-		var player = new Player(0, -250);		
-		var npc = new Player(20, -200);
-		
+		var player = new Player("me", 0, -250);		
 		camera.players.push(player);
+		
+		var npc = new NPC("notme", 20, -200);
 		camera.players.push(npc);
 		
 		//camera.target = player;

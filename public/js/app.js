@@ -66,14 +66,17 @@
 
   ko.handle.playerjoin = function() {
     ko.playersRemaining = arguments.length
-    log("Player joined with ids: %s", Array.prototype.slice.call(arguments, 0).join(","));
+    //log("Player joined with ids: %s", Array.prototype.slice.call(arguments, 0).join(","));
     for (var i = 0; i < arguments.length; i++) {
-      var id = arguments[i];
+      var keys = arguments[i];
+      var split = keys.split("~:)~")
+      var id = split[0]
+      var userkey = split.length > 1 ? split[1] : null
       if (id === player.id) {
         player.moveTo(i * 50, -250);
       }
       else if (!NPC.hash[id]) {
-        var new_npc = new NPC(id, i * 50, -250);
+        var new_npc = new NPC(id, i * 50, -250, userkey);
         camera.players.push(new_npc);
       }
     }
@@ -443,10 +446,12 @@ Animation.prototype.draw = function(frame, ctx, x, y, scale, flip) {
   };
   
   
-  function NPC(id, x, y) {
+  function NPC(id, x, y, userkey) {
+    log("new NPC " + id + " : " + userkey)
     this.id = id;
     this.x = x;
     this.y = y;
+    this.userkey = userkey;
     NPC.hash[id] = this;
   }
   NPC.prototype.draw = function(ctx, ox, oy, scale) {
@@ -461,6 +466,7 @@ Animation.prototype.draw = function(frame, ctx, x, y, scale, flip) {
   NPC.hash = [];
   
   function Player(id, x, y, userkey) {
+    log("new player " + id + " : " + userkey)
     this.id = id;
     this.userkey = userkey;
     this.x = x;
@@ -482,6 +488,10 @@ Animation.prototype.draw = function(frame, ctx, x, y, scale, flip) {
     }
     ko.send(data);
   };
+  Player.prototype.receiveBlow = function(NPC){
+    this.lastHitBy = NPC.id
+    this.lastHitByUserKey = NPC.userkey
+  }
   Player.prototype.moveTo = function(x, y) {
     this.x = this.body.m_position.x = x;
     this.y = this.body.m_position.y = y;

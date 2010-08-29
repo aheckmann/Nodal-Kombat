@@ -30,7 +30,6 @@ h2 {
 
 /*Layout*/
 #container {
-	margin: auto;
 	width: 1200px;
 	position: relative;
 	margin-bottom: 30px;
@@ -49,7 +48,7 @@ h2 {
 }
 
 .b.top div.leaderboard {
-	margin-left: 21px;
+	margin-left: 53px;
 	background-color: rgba(0,0,0,.8);
 	
 }

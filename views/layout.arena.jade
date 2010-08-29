@@ -3,17 +3,26 @@ html
   head
     meta(charset="utf-8")
     title Node Knockout
+    link(rel="stylesheet", href="/css/app.css")    
     link(rel="stylesheet", href="/css/leveltest.css")    
     script(src:"http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js")
     script(src:"/js/json.js")
     script(src:"/js/socketio/socket.io.js")
+    script(src:"/js/simpleModal.js")
     script
+      | var __err = console.error;
       | console.error = function(err){
       |   if (~(""+err).indexOf("Error: You are tr"))
       |     return;
+      |   __err(err)
       | }
     script(src:"/js/box2djq.js")
-    script(src:"/js/box2d_debug.js")	
-  body
+    script(src:"/js/box2d_debug.js")	 
+    :javascript
+      | var rpxJsHost = (("https:" == document.location.protocol) ? "https://" : "http://static.");
+      |	document.write(unescape("%3Cscript src='" + rpxJsHost + "rpxnow.com/js/lib/rpx.js' type='text/javascript'%3E%3C/script%3E"));
+      |	//RPXNOW.overlay = true;
+      |	//RPXNOW.language_preference = 'en';
+  body#fighting
     #wrap!= body
     script(src:"/js/app.js")    

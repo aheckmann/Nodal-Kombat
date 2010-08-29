@@ -1,0 +1,19 @@
+!!! 5
+html
+  head
+    meta(charset="utf-8")
+    title Node Knockout
+    link(rel="stylesheet", href="/css/leveltest.css")    
+    script(src:"http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js")
+    script(src:"/js/json.js")
+    script(src:"/js/socketio/socket.io.js")
+    script
+      | console.error = function(err){
+      |   if (~(""+err).indexOf("Error: You are tr"))
+      |     return;
+      | }
+    script(src:"/js/box2djq.js")
+    script(src:"/js/box2d_debug.js")	
+  body
+    #wrap!= body
+    script(src:"/js/app.js")    

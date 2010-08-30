@@ -656,7 +656,7 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
   Player.prototype._jump = function() {
     if (this.body.GetContactList()) {
         this.air_jump = true;
-        this.body.ApplyImpulse(new b2Vec2(0, -6000), this.body.GetCenterPosition());					
+        this.body.ApplyImpulse(new b2Vec2(0, -4000), this.body.GetCenterPosition());					
         return;
     }
     if (this.air_jump) {

@@ -76,7 +76,7 @@
       var keys = arguments[i];
       var split = keys.split("~:)~")
       var id = split[0]
-      var userkey = split.length > 1 ? split[1] : null
+      var userkey = split.length > 1 ? (split[1]||"").replace(/-/g,"|") : null
       if (id === player.id) {
         player.moveTo(i * 50, -250);
       }
@@ -336,7 +336,7 @@ Animation.prototype.draw = function(frame, ctx, x, y, scale, flip) {
       );
     }
 		
-    drawWorld(physics.world, ctx, fx, fy, scale);
+    //drawWorld(physics.world, ctx, fx, fy, scale);
   }
 		
 		

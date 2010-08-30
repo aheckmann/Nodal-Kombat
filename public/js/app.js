@@ -71,7 +71,7 @@
 
   ko.handle.playerjoin = function() {
     ko.playersRemaining = arguments.length
-    //log("Player joined with ids: %s", Array.prototype.slice.call(arguments, 0).join(","));
+    log("players remaining"+ko.playersRemaining)
     for (var i = 0; i < arguments.length; i++) {
       var keys = arguments[i];
       var split = keys.split("~:)~")
@@ -89,8 +89,10 @@
   
   ko.handle.status = function(status){
     log("status: "+status)
-    if ("gameover" === status)
+    if ("gameover" === status){
       clearInterval(ko._gameTimer)
+      $(document).trigger("gameover")
+    }
   }
   
   ko.handle.position = function(id, x, y) {
@@ -105,11 +107,19 @@
       }
     }
   };
+ 
+  ko.handle.playanim = function(id, name, flipped) {
+  	if (NPC.hash[id]) {
+  		//log("Received flipped: " + flipped);
+  		NPC.hash[id].flipped = flipped;
+	  	NPC.hash[id].anim_state = new AnimState(name);
+	 }
+  };
 
   var socket = new io.Socket(location.hostname)
   socket.connect()
   socket.on("message", function(message){
-    console.log(message)
+    //console.log(message)
     
     // don't use JSON.parsing, too slow
     // "jump#40,400,60|punch|gameover"
@@ -518,7 +528,8 @@ Animation.prototype.draw = function(frame, ctx, x, y, scale, flip) {
     var data = {method: "position", args: [this.id, this.x, this.y] }
     if (!this.DEAD && this.y > level.deathline){
       this.DEAD = true
-      data = [data, {method: "die", args:[this.lastHitBy || this.id, this.lastHitByUserKey]}];
+      data = [data, {method: "die", args:[this.lastHitBy || this.id, (this.lastHitByUserKey||"").replace(/-/g,"|")]}];
+      ko.handle.die()
     }
     ko.send(data);
   };
@@ -759,61 +770,7 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
   var SINGLE_USER = false;
   
   //camera.target = player;
-  
-
-  ko.handle.receiveid = function(id) {
-    console.log(arguments)
-  	if (SINGLE_USER) {
-	  	return;	
-  	} 
-    player = window.player = new Player(id, 0, -250);		
-    camera.players.push(player);			
-  }
-
-  ko.handle.playerjoin = function() {
-    log("Player joined with ids: %s", Array.prototype.slice.call(arguments, 0).join(","));
-    for (var i = 0; i < arguments.length; i++) {
-      var split = arguments[i].split("~:)~")
-      var id = split[0]
-      var userkey = split.length > 1 ? split[1] : null
-      console.log("join id : " + id)
-      if (id === player.id) {
-        player.moveTo(i * 50, -250);
-      }
-      else if (!NPC.hash[id]) {
-        var new_npc = new NPC(id, i * 50, -250, userkey);
-        camera.players.push(new_npc);
-      }
-    }
-  };
-  
-  ko.handle.status = function(status){
-    log("status: "+status)
-    if ("gameover" === status)
-      clearInterval(ko._gameTimer)
-  }
-  
-  ko.handle.position = function(id, x, y) {
-    var players = camera.players
-      , len = players.length
-      , p
-    while (len--){
-      p = players[len];
-      if (p.id == id) {
-        p.moveTo(x, y);
-        return;
-      }
-    }
-  };
-  
-  ko.handle.playanim = function(id, name, flipped) {
-  	if (NPC.hash[id]) {
-  		//log("Received flipped: " + flipped);
-  		NPC.hash[id].flipped = flipped;
-	  	NPC.hash[id].anim_state = new AnimState(name);
-	 }
-  };
-  
+   
   function log(msg) {
   	if (window.console) {
   		window.console.log.apply(window.console, arguments);

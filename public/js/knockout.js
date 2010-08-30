@@ -39,7 +39,10 @@ var knockout = {
 	      $(document).bind("gamestart",function(){
 	      	waitingMessage.fadeOut();
 	      	instruction.animate({right:'0px',top:'0px'})
-	      });
+	      })
+        .bind("gameover", function(){
+          $("#gameover").fadeIn()  
+        })
 	      
 	      level.load('test_level', start); 
 	      

@@ -21,6 +21,10 @@
       #live-action-container
         #waiting Waiting for bad company...
         #instruction space=jump, D=punch, S=kick
+        #gameover
+          h2 GAMEOVER
+          #start-play-now
+            a.big-yellow-button.button.big(href:"/arena") Play Again
         canvas(id: "arena", width:800, height:480)
         #character-selection-container
           h1 Choose a Character

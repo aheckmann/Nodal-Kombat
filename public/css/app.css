@@ -318,6 +318,22 @@ width:206px;
 	display: none;
 }
 
+#gameover{ 
+  display: none;
+  position: absolute;
+  left:27%;
+  top: 29%;
+}
+#gameover h2 {
+  font-size: 73px;
+  color: #f51111;
+  text-shadow: 0px 5px 6px black;
+}
+#gameover #start-play-now{
+  margin-left: 107px;
+  position:static;
+}
+
 #character-selection-container {
 	width: 830px;
 	position: absolute;

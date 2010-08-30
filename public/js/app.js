@@ -659,8 +659,8 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
 	
 	Player.prototype._run = function(x) {
     var offset = b2Math.AddVV(this.body.GetCenterPosition(), new b2Vec2(0, -this.r * 15));
-    this.body.ApplyForce(new b2Vec2(x * 5000, 0), this.body.GetCenterPosition());
-    this.body.ApplyTorque(500000 * x);
+    this.body.ApplyForce(new b2Vec2(x * 3000, 0), this.body.GetCenterPosition());
+    this.body.ApplyTorque(900000 * x);
   };
   Player.prototype._run.priority = 20;
   Player.prototype._run.animation = 'run';
@@ -668,7 +668,7 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
   Player.prototype._jump = function() {
     if (this.body.GetContactList()) {
         this.air_jump = true;
-        this.body.ApplyImpulse(new b2Vec2(0, -2000), this.body.GetCenterPosition());					
+        this.body.ApplyImpulse(new b2Vec2(0, -4000), this.body.GetCenterPosition());					
         return;
     }
     if (this.air_jump) {

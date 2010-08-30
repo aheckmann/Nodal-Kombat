@@ -719,13 +719,11 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
 		{c: 0, r: 0}
 	];
 
-	animation['run'] = new Animation(sprite['aaron'], 300, 1);
+	animation['run'] = new Animation(sprite['aaron'], 150, 1);
 	animation['run'].order = [
 		{c: 0, r: 0},
 		{c: 6, r: 0},
 		{c: 7, r: 0},
-		{c: 8, r: 0},
-		{c: 0, r: 0}
 	];
 
 	animation['stab'] = new Animation(sprite['aaron'], 300, 1);

@@ -24,8 +24,8 @@
         //log(arguments)
     }
     , gametimer: function(){ 
-        log("gametimer"); 
-        log(arguments) 
+        //log("gametimer"); 
+        //log(arguments) 
       }
     , status: function(status){
         log("status: %s" + status);
@@ -61,6 +61,7 @@
     $(document).trigger("gamestart")
   }
   ko.handle.receiveid = function(id, userkey) {
+    console.log("receiveid");console.log(arguments)
   	if (SINGLE_USER) {
 	  	return;	
   	} 
@@ -108,7 +109,7 @@
   var socket = new io.Socket(location.hostname)
   socket.connect()
   socket.on("message", function(message){
-    //console.dir(message)
+    console.log(message)
     
     // don't use JSON.parsing, too slow
     // "jump#40,400,60|punch|gameover"
@@ -761,6 +762,7 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
   
 
   ko.handle.receiveid = function(id) {
+    console.log(arguments)
   	if (SINGLE_USER) {
 	  	return;	
   	} 
@@ -771,12 +773,15 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
   ko.handle.playerjoin = function() {
     log("Player joined with ids: %s", Array.prototype.slice.call(arguments, 0).join(","));
     for (var i = 0; i < arguments.length; i++) {
-      var id = arguments[i];
+      var split = arguments[i].split("~:)~")
+      var id = split[0]
+      var userkey = split.length > 1 ? split[1] : null
+      console.log("join id : " + id)
       if (id === player.id) {
         player.moveTo(i * 50, -250);
       }
       else if (!NPC.hash[id]) {
-        var new_npc = new NPC(id, i * 50, -250);
+        var new_npc = new NPC(id, i * 50, -250, userkey);
         camera.players.push(new_npc);
       }
     }

@@ -534,7 +534,7 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
 	this.y = this.body.m_position.y;
 	
   this.anim_state.enter_frame();
-  var damage = this.anim_state.draw(ctx, ox + (this.x - 40) * scale, oy + (this.y - 115) * scale, scale, this.flipped)
+  var damage = this.anim_state.draw(ctx, ox + (this.x - 40) * scale, oy + (this.y - 115) * scale, scale, !this.flipped)
   if (damage){
     for(var npc in NPC.hash) {
       if (Math.abs(npc.x - this.x) < 40 && Math.abs(npc.y - this.y) < 128){

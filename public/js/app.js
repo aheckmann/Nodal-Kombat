@@ -471,18 +471,18 @@ Animation.prototype.draw = function(frame, ctx, x, y, scale, flip) {
   }
   NPC.prototype.draw = function(ctx, ox, oy, scale) {
 	if (this.flipped === "true") {	
-	    ctx.fillStyle = "#f00";
+	  //ctx.fillStyle = "#f00";
 		this.anim_state.enter_frame();
 		this.anim_state.draw(ctx, ox + (this.x - 40) * scale, oy + (this.y - 115) * scale, scale, false);
 	}
 	else {
 	    //log("NOT FLIPPED!");	
-	    ctx.fillStyle = "#00f";
+	  //ctx.fillStyle = "#00f";
 		this.anim_state.enter_frame();
 		this.anim_state.draw(ctx, ox + (this.x - 40) * scale, oy + (this.y - 115) * scale, scale, true);
 	}
 	
-	    ctx.fillRect(ox + this.x * scale - 5, oy + this.y * scale - 5, 10, 10);
+	//ctx.fillRect(ox + this.x * scale - 5, oy + this.y * scale - 5, 10, 10);
     
   };
   NPC.prototype.moveTo = function(x, y) {
@@ -649,7 +649,7 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
 	Player.prototype._run = function(x) {
     var offset = b2Math.AddVV(this.body.GetCenterPosition(), new b2Vec2(0, -this.r * 15));
     this.body.ApplyForce(new b2Vec2(x * 5000, 0), this.body.GetCenterPosition());
-    this.body.ApplyTorque(600000 * x);
+    this.body.ApplyTorque(500000 * x);
   };
   Player.prototype._run.priority = 20;
   Player.prototype._run.animation = 'run';
@@ -657,7 +657,7 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
   Player.prototype._jump = function() {
     if (this.body.GetContactList()) {
         this.air_jump = true;
-        this.body.ApplyImpulse(new b2Vec2(0, -4000), this.body.GetCenterPosition());					
+        this.body.ApplyImpulse(new b2Vec2(0, -2000), this.body.GetCenterPosition());					
         return;
     }
     if (this.air_jump) {

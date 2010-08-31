@@ -1,1 +1,10 @@
-hi
+git submodule update --init --recursive
+
+sudo node server.js
+
+No collision detection yet
+Kills not begin reported correctly (commented out)
+Countdown to start not displayed (only in the console)
+Game timer not displayed (only logged in the console)
+Only one character available
+Some sound was recorded but not implemented

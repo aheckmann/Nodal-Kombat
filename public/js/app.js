@@ -1,4 +1,5 @@
 ;(function($, io, toString){
+
   io.setPath("/js/socketio/")
 
   window.ko = {
@@ -61,7 +62,7 @@
     $(document).trigger("gamestart")
   }
   ko.handle.receiveid = function(id, userkey) {
-    console.log("receiveid");console.log(arguments)
+    log("receiveid");log(arguments)
   	if (SINGLE_USER) {
 	  	return;	
   	} 
@@ -772,7 +773,7 @@ Player.prototype.draw = function(ctx, ox, oy, scale) {
   //camera.target = player;
    
   function log(msg) {
-  	if (window.console) {
+  	if (window.console && "function" == typeof window.console.log) {
   		window.console.log.apply(window.console, arguments);
   	}
   }
